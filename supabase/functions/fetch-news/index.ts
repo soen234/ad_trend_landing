@@ -125,7 +125,7 @@ Respond in this exact JSON format:
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig: {
               temperature: 0.3,
-              maxOutputTokens: 500,
+              maxOutputTokens: 1024,
             },
           }),
         }
