@@ -158,8 +158,8 @@ Respond in this exact JSON format:
       console.error(`Error processing news item:`, error);
     }
 
-    // Rate limiting
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    // Rate limiting - 무료 티어는 분당 5개 제한 (15초 대기)
+    await new Promise((resolve) => setTimeout(resolve, 15000));
   }
 
   return results;
@@ -210,9 +210,9 @@ serve(async (req) => {
       );
     }
 
-    // 3. Gemini로 처리
+    // 3. Gemini로 처리 (무료 티어 제한으로 최대 5개)
     console.log("Processing with Gemini...");
-    const processedNews = await processWithGemini(newItems.slice(0, 10)); // 최대 10개
+    const processedNews = await processWithGemini(newItems.slice(0, 5));
 
     // 4. DB에 저장
     if (processedNews.length > 0) {
