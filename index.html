@@ -10,6 +10,9 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8143178103770527"
          crossorigin="anonymous"></script>
 
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -391,6 +394,102 @@
         @media (max-width: 480px) {
             .gnb-lang { display: none; }
         }
+
+        /* News Section */
+        .news-section {
+            margin: 60px 0;
+        }
+
+        .news-section h2 {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 32px;
+        }
+
+        .news-preview-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .news-preview-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .news-preview-card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .news-preview-meta {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .news-preview-category {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .news-preview-category.programmatic { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
+        .news-preview-category.mobile { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
+        .news-preview-category.privacy { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .news-preview-category.platform { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .news-preview-category.trend { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
+
+        .news-preview-date {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .news-preview-card h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .news-preview-card h3 a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .news-preview-card h3 a:hover {
+            color: #4ade80;
+        }
+
+        .news-preview-summary {
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .view-all-news {
+            display: block;
+            text-align: center;
+            margin-top: 24px;
+            color: #4ade80;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .view-all-news:hover {
+            text-decoration: underline;
+        }
+
+        .news-loading, .news-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
     </style>
 </head>
 <body>
@@ -399,12 +498,13 @@
         <div class="gnb-inner">
             <a href="index.html" class="gnb-logo">
                 <img src="logo.png" alt="TAT">
-                <span>TAT</span>
+                <span>Today Ad Trend</span>
             </a>
             <div class="gnb-nav">
                 <a href="index.html" class="active" data-ko="홈" data-en="Home">Home</a>
                 <a href="guide.html" data-ko="가이드" data-en="Guide">Guide</a>
                 <a href="blog.html" data-ko="블로그" data-en="Blog">Blog</a>
+                <a href="news.html" data-ko="뉴스" data-en="News">News</a>
             </div>
             <div class="gnb-lang">
                 <button class="lang-btn active" onclick="setLang('ko')">KO</button>
@@ -501,6 +601,15 @@
             <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
         </div>
 
+        <!-- News Section -->
+        <section class="news-section">
+            <h2 data-ko="최신 광고 산업 뉴스" data-en="Latest Ad Industry News">Latest Ad Industry News</h2>
+            <div class="news-preview-grid" id="newsPreviewGrid">
+                <div class="news-loading" data-ko="뉴스를 불러오는 중..." data-en="Loading news...">Loading news...</div>
+            </div>
+            <a href="news.html" class="view-all-news" data-ko="모든 뉴스 보기 →" data-en="View All News →">View All News →</a>
+        </section>
+
         <!-- Support -->
         <section class="support">
             <h2 data-ko="고객 지원" data-en="Support">Support</h2>
@@ -544,15 +653,80 @@
     </div>
 
     <script>
+        // Supabase 클라이언트 초기화
+        const SUPABASE_URL = 'https://jwyjvinmgdozkgzydmax.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3eWp2aW5tZ2RvemtnenlkbWF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY5NTAwNTUsImV4cCI6MjA4MjUyNjA1NX0.JKhtk6bfhnIkyrBD-BvOZfgo4NCzv3GN4802AikObfk';
+
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let currentLang = 'en';
+
         function setLang(lang) {
+            currentLang = lang;
             document.querySelectorAll('[data-ko]').forEach(el => {
                 el.textContent = el.getAttribute(`data-${lang}`);
             });
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.textContent === (lang === 'ko' ? 'KO' : 'EN'));
             });
+            // 뉴스 다시 렌더링
+            loadNewsPreview();
         }
+
+        // 뉴스 미리보기 로드 (최신 3개)
+        async function loadNewsPreview() {
+            const container = document.getElementById('newsPreviewGrid');
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('ad_news')
+                    .select('*')
+                    .order('published_at', { ascending: false })
+                    .limit(3);
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = `<div class="news-empty">${currentLang === 'ko' ? '뉴스가 없습니다.' : 'No news available.'}</div>`;
+                    return;
+                }
+
+                const categoryLabels = {
+                    programmatic: { en: 'Programmatic', ko: '프로그래매틱' },
+                    mobile: { en: 'Mobile', ko: '모바일' },
+                    privacy: { en: 'Privacy', ko: '프라이버시' },
+                    platform: { en: 'Platform', ko: '플랫폼' },
+                    trend: { en: 'Trend', ko: '트렌드' }
+                };
+
+                container.innerHTML = data.map(news => {
+                    const title = currentLang === 'ko' && news.title_ko ? news.title_ko : news.title;
+                    const summary = currentLang === 'ko' && news.summary_ko ? news.summary_ko : news.summary;
+                    const categoryLabel = categoryLabels[news.category]?.[currentLang] || news.category;
+                    const date = new Date(news.published_at).toLocaleDateString(currentLang === 'ko' ? 'ko-KR' : 'en-US', {
+                        month: 'short',
+                        day: 'numeric'
+                    });
+
+                    return `
+                        <article class="news-preview-card">
+                            <div class="news-preview-meta">
+                                <span class="news-preview-category ${news.category}">${categoryLabel}</span>
+                                <span class="news-preview-date">${date}</span>
+                            </div>
+                            <h3><a href="${news.source_url}" target="_blank" rel="noopener">${title}</a></h3>
+                            <p class="news-preview-summary">${summary}</p>
+                        </article>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading news:', error);
+                container.innerHTML = `<div class="news-empty">${currentLang === 'ko' ? '뉴스를 불러올 수 없습니다.' : 'Could not load news.'}</div>`;
+            }
+        }
+
+        // 초기화
         setLang('en');
+        loadNewsPreview();
 
         // Anchor Ad close function
         function closeAnchorAd() {
