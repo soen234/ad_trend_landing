@@ -117,7 +117,7 @@ Respond in this exact JSON format:
 }`;
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -132,7 +132,10 @@ Respond in this exact JSON format:
       );
 
       const data = await response.json();
+      console.log("Gemini response:", JSON.stringify(data).slice(0, 500));
+
       const textContent = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      console.log("Text content:", textContent.slice(0, 200));
 
       // JSON 파싱
       const jsonMatch = textContent.match(/\{[\s\S]*\}/);
@@ -198,6 +201,7 @@ serve(async (req) => {
     const newItems = uniqueNews.filter((item) => !existingUrlSet.has(item.link));
 
     console.log(`${newItems.length} new items to process`);
+    console.log("First 3 new items:", newItems.slice(0, 3).map(i => i.title));
 
     if (newItems.length === 0) {
       return new Response(

@@ -1,0 +1,39 @@
+import type { Metadata } from "next";
+import Script from "next/script";
+import "./globals.css";
+import ClientLayout from "./ClientLayout";
+
+export const metadata: Metadata = {
+  title: "TAT - Today Ad Trend",
+  description: "Explore the latest mobile ad trends and formats",
+  icons: {
+    icon: "/logo.png",
+  },
+  openGraph: {
+    title: "TAT - Today Ad Trend",
+    description: "Explore the latest mobile ad trends and formats",
+    images: ["/logo.png"],
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <head>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8143178103770527"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      </head>
+      <body>
+        <ClientLayout>{children}</ClientLayout>
+      </body>
+    </html>
+  );
+}

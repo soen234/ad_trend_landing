@@ -1,0 +1,24 @@
+{
+  "name": "today_ad_trend_landing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soen234/ad_trend_landing.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/soen234/ad_trend_landing/issues"
+  },
+  "homepage": "https://github.com/soen234/ad_trend_landing#readme",
+  "devDependencies": {
+    "supabase": "^2.70.5"
+  }
+}
