@@ -21,10 +21,90 @@
             line-height: 1.6;
         }
 
+        /* GNB */
+        .gnb {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 25, 41, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            padding: 0 20px;
+        }
+
+        .gnb-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+
+        .gnb-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .gnb-logo img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+        }
+
+        .gnb-logo span {
+            font-weight: 700;
+            font-size: 18px;
+            background: linear-gradient(135deg, #4ade80 0%, #22d3ee 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gnb-nav {
+            display: flex;
+            gap: 32px;
+        }
+
+        .gnb-nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .gnb-nav a:hover, .gnb-nav a.active {
+            color: #4ade80;
+        }
+
+        .gnb-lang {
+            display: flex;
+            gap: 8px;
+        }
+
+        .lang-btn {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .lang-btn:hover, .lang-btn.active {
+            background: rgba(74, 222, 128, 0.3);
+        }
+
         .container {
             max-width: 800px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 100px 20px 40px;
         }
 
         /* Header */
@@ -290,28 +370,9 @@
             color: #4ade80;
         }
 
-        /* Language Switch */
-        .lang-switch {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 8px;
-            z-index: 100;
-        }
-
-        .lang-btn {
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            border-radius: 6px;
-            color: #fff;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .lang-btn:hover, .lang-btn.active {
-            background: rgba(74, 222, 128, 0.3);
+        @media (max-width: 768px) {
+            .gnb-nav { gap: 16px; }
+            .gnb-nav a { font-size: 13px; }
         }
 
         @media (max-width: 600px) {
@@ -319,20 +380,33 @@
             .section h2 { font-size: 20px; }
             .comparison-table { font-size: 13px; }
         }
+
+        @media (max-width: 480px) {
+            .gnb-lang { display: none; }
+        }
     </style>
 </head>
 <body>
-    <div class="lang-switch">
-        <button class="lang-btn active" onclick="setLang('ko')">한국어</button>
-        <button class="lang-btn" onclick="setLang('en')">English</button>
-    </div>
+    <!-- GNB -->
+    <nav class="gnb">
+        <div class="gnb-inner">
+            <a href="index.html" class="gnb-logo">
+                <img src="logo.png" alt="TAT">
+                <span>TAT</span>
+            </a>
+            <div class="gnb-nav">
+                <a href="index.html" data-ko="홈" data-en="Home">Home</a>
+                <a href="guide.html" class="active" data-ko="가이드" data-en="Guide">Guide</a>
+                <a href="blog.html" data-ko="블로그" data-en="Blog">Blog</a>
+            </div>
+            <div class="gnb-lang">
+                <button class="lang-btn active" onclick="setLang('ko')">KO</button>
+                <button class="lang-btn" onclick="setLang('en')">EN</button>
+            </div>
+        </div>
+    </nav>
 
     <div class="container">
-        <a href="index.html" class="back-link">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            <span data-ko="홈으로 돌아가기" data-en="Back to Home">Back to Home</span>
-        </a>
-
         <!-- Header -->
         <div class="header">
             <img src="logo.png" alt="TAT Logo">
@@ -679,7 +753,7 @@
                 el.textContent = el.getAttribute(`data-${lang}`);
             });
             document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.textContent.includes(lang === 'ko' ? '한국어' : 'English'));
+                btn.classList.toggle('active', btn.textContent === (lang === 'ko' ? 'KO' : 'EN'));
             });
         }
         setLang('en');
