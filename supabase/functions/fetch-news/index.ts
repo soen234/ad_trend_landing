@@ -22,11 +22,20 @@ const SEARCH_KEYWORDS = [
 
 // 카테고리 분류 기준
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
-  programmatic: ["programmatic", "rtb", "dsp", "ssp", "real-time bidding", "auction"],
-  mobile: ["mobile ad", "in-app", "app advertising", "mobile marketing", "rewarded ad", "interstitial"],
-  privacy: ["privacy", "idfa", "att", "gdpr", "ccpa", "cookie", "tracking", "sandbox"],
-  platform: ["google ads", "meta", "facebook", "tiktok", "apple", "amazon ads", "microsoft"],
-  trend: ["market", "forecast", "growth", "spending", "revenue", "report", "study"],
+  adtech: [
+    "programmatic", "rtb", "dsp", "ssp", "real-time bidding", "auction",
+    "ad tech", "adtech", "mobile ad", "in-app", "app advertising",
+    "rewarded ad", "interstitial", "banner ad", "video ad", "native ad",
+    "ad network", "ad exchange", "attribution", "mmp", "skadnetwork", "skan",
+    "privacy sandbox", "idfa", "att", "gaid", "advertising id"
+  ],
+  martech: [
+    "martech", "marketing tech", "marketing automation", "crm", "cdp",
+    "customer data", "analytics", "personalization", "segmentation",
+    "email marketing", "push notification", "engagement", "retention",
+    "lifecycle", "journey", "campaign management", "a/b test"
+  ],
+  // general은 기본값으로 사용
 };
 
 interface NewsItem {
@@ -91,7 +100,15 @@ function classifyCategory(title: string, summary: string): string {
     }
   }
 
-  return "trend"; // 기본값
+  return "general"; // 기본값
+}
+
+// 최근 24시간 내 뉴스인지 확인
+function isRecent(pubDate: string): boolean {
+  const newsDate = new Date(pubDate);
+  const now = new Date();
+  const hoursDiff = (now.getTime() - newsDate.getTime()) / (1000 * 60 * 60);
+  return hoursDiff <= 24;
 }
 
 // Gemini API로 뉴스 요약 및 번역
@@ -192,13 +209,17 @@ serve(async (req) => {
 
     console.log(`Found ${uniqueNews.length} unique news items`);
 
+    // 최근 24시간 뉴스만 필터링
+    const recentNews = uniqueNews.filter((item) => isRecent(item.pubDate));
+    console.log(`Recent news (24h): ${recentNews.length} items`);
+
     // 2. 기존 URL 체크 (중복 방지)
     const { data: existingUrls } = await supabase
       .from("ad_news")
       .select("source_url");
 
     const existingUrlSet = new Set(existingUrls?.map((r) => r.source_url) || []);
-    const newItems = uniqueNews.filter((item) => !existingUrlSet.has(item.link));
+    const newItems = recentNews.filter((item) => !existingUrlSet.has(item.link));
 
     console.log(`${newItems.length} new items to process`);
     console.log("First 3 new items:", newItems.slice(0, 3).map(i => i.title));
@@ -234,6 +255,7 @@ serve(async (req) => {
       JSON.stringify({
         message: "News fetch completed",
         fetched: uniqueNews.length,
+        recentNews: recentNews.length,
         processed: processedNews.length,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }

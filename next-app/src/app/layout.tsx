@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import "./globals.css";
 import ClientLayout from "./ClientLayout";
 
@@ -24,11 +23,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <Script
+        <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8143178103770527"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
         />
       </head>
       <body>

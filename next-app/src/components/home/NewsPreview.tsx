@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { useLanguage } from '@/hooks/useLanguage';
 import { getLatestNews, NewsItem } from '@/lib/supabase';
 
-const categoryColors: Record<string, string> = {
-  programmatic: 'bg-[rgba(139,92,246,0.2)] text-[#a78bfa]',
-  mobile: 'bg-[rgba(74,222,128,0.2)] text-[#4ade80]',
-  privacy: 'bg-[rgba(251,191,36,0.2)] text-[#fbbf24]',
-  platform: 'bg-[rgba(59,130,246,0.2)] text-[#60a5fa]',
-  trend: 'bg-[rgba(236,72,153,0.2)] text-[#f472b6]',
+const categoryStyles: Record<string, React.CSSProperties> = {
+  programmatic: { background: 'rgba(139,92,246,0.2)', color: '#a78bfa' },
+  mobile: { background: 'rgba(74,222,128,0.2)', color: '#4ade80' },
+  privacy: { background: 'rgba(251,191,36,0.2)', color: '#fbbf24' },
+  platform: { background: 'rgba(59,130,246,0.2)', color: '#60a5fa' },
+  trend: { background: 'rgba(236,72,153,0.2)', color: '#f472b6' },
 };
 
 export default function NewsPreview() {
@@ -45,24 +45,24 @@ export default function NewsPreview() {
   };
 
   return (
-    <section className="my-16">
-      <h2 className="text-center text-3xl font-bold mb-8">{t('news.title')}</h2>
+    <section className="news-section">
+      <h2>{t('news.title')}</h2>
 
-      <div className="grid gap-5">
+      <div className="news-grid">
         {loading && (
-          <div className="text-center py-10 text-[var(--color-muted-dark)]">
+          <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--color-muted-dark)' }}>
             {t('news.loading')}
           </div>
         )}
 
         {error && (
-          <div className="text-center py-10 text-[var(--color-muted-dark)]">
+          <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--color-muted-dark)' }}>
             {t('news.error')}
           </div>
         )}
 
         {!loading && !error && news.length === 0 && (
-          <div className="text-center py-10 text-[var(--color-muted-dark)]">
+          <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--color-muted-dark)' }}>
             {t('news.empty')}
           </div>
         )}
@@ -70,40 +70,29 @@ export default function NewsPreview() {
         {!loading &&
           !error &&
           news.map((item) => (
-            <article key={item.id} className="card p-6">
-              <div className="flex gap-3 items-center mb-3 flex-wrap">
+            <article key={item.id} className="news-card">
+              <div className="news-meta">
                 <span
-                  className={`px-2.5 py-1 rounded text-xs font-semibold uppercase ${
-                    categoryColors[item.category] || 'bg-[rgba(255,255,255,0.1)] text-white'
-                  }`}
+                  className="category-badge"
+                  style={categoryStyles[item.category] || { background: 'rgba(255,255,255,0.1)', color: '#fff' }}
                 >
                   {getCategoryLabel(item.category)}
                 </span>
-                <span className="text-[var(--color-muted-dark)] text-xs">
+                <span className="news-date">
                   {formatDate(item.published_at)}
                 </span>
               </div>
-              <h3 className="text-base font-semibold mb-2 leading-snug">
-                <a
-                  href={item.source_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-white no-underline hover:text-[var(--color-accent-green)] transition-colors"
-                >
+              <h3>
+                <a href={item.source_url} target="_blank" rel="noopener noreferrer">
                   {lang === 'ko' && item.title_ko ? item.title_ko : item.title}
                 </a>
               </h3>
-              <p className="text-[var(--color-muted)] text-sm leading-relaxed">
-                {lang === 'ko' && item.summary_ko ? item.summary_ko : item.summary}
-              </p>
+              <p>{lang === 'ko' && item.summary_ko ? item.summary_ko : item.summary}</p>
             </article>
           ))}
       </div>
 
-      <Link
-        href="/news"
-        className="block text-center mt-6 text-[var(--color-accent-green)] no-underline font-medium hover:underline"
-      >
+      <Link href="/news" className="view-all-link">
         {t('news.viewAll')} &rarr;
       </Link>
     </section>
