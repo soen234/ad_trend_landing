@@ -89,8 +89,9 @@ export default function Header() {
       </div>
 
       {/* Mobile Navigation Menu */}
-      <div className={`md:hidden overflow-hidden transition-all duration-300 ${isMenuOpen ? 'max-h-80' : 'max-h-0'}`}>
-        <div className="flex flex-col py-4 border-t border-[var(--color-border)]">
+      <div className={`md:hidden grid transition-all duration-300 ${isMenuOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+        <div className="overflow-hidden">
+          <div className="flex flex-col py-4 border-t border-[var(--color-border)]">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -105,6 +106,7 @@ export default function Header() {
               {t(item.key)}
             </Link>
           ))}
+          </div>
         </div>
       </div>
     </nav>
