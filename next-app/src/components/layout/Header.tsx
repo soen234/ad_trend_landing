@@ -89,7 +89,7 @@ export default function Header() {
       </div>
 
       {/* Mobile Navigation Menu */}
-      <div className={`md:hidden overflow-hidden transition-all duration-300 ${isMenuOpen ? 'max-h-60' : 'max-h-0'}`}>
+      <div className={`md:hidden overflow-hidden transition-all duration-300 ${isMenuOpen ? 'max-h-80' : 'max-h-0'}`}>
         <div className="flex flex-col py-4 border-t border-[var(--color-border)]">
           {navItems.map((item) => (
             <Link
