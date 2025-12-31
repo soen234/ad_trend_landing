@@ -13,6 +13,9 @@ export const metadata: Metadata = {
     description: "Explore the latest mobile ad trends and formats",
     images: ["/logo.png"],
   },
+  other: {
+    "google-adsense-account": "ca-pub-8143178103770527",
+  },
 };
 
 export default function RootLayout({
@@ -27,7 +30,7 @@ export default function RootLayout({
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8143178103770527"
           crossOrigin="anonymous"
-        />
+        ></script>
       </head>
       <body>
         <ClientLayout>{children}</ClientLayout>

@@ -71,6 +71,17 @@ export default function BlogPostContent({ post }: BlogPostContentProps) {
         &larr; {lang === 'ko' ? '블로그로 돌아가기' : 'Back to Blog'}
       </Link>
 
+      {/* Featured Image */}
+      {post.image && (
+        <div className="h-[240px] md:h-[320px] rounded-2xl overflow-hidden mb-8 bg-gradient-to-br from-[#1e3a5f] to-[#2d4a6f]">
+          <img
+            src={post.image}
+            alt={lang === 'ko' ? post.title_ko : post.title_en}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+
       {/* Header */}
       <header className="mb-8">
         <div className="flex gap-4 mb-4">

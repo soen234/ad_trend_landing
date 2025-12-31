@@ -11,6 +11,7 @@ export interface BlogPost {
   category_ko: string;
   category_en: string;
   emoji: string;
+  image?: string;
   publishedAt: string;
   featured?: boolean;
   content: string;
@@ -41,6 +42,7 @@ export function getAllPosts(): BlogPost[] {
         category_ko: data.category_ko || '',
         category_en: data.category_en || '',
         emoji: data.emoji || '',
+        image: data.image || '',
         publishedAt: data.publishedAt || '',
         featured: data.featured || false,
         content,
@@ -71,6 +73,7 @@ export function getPostBySlug(slug: string): BlogPost | null {
     category_ko: data.category_ko || '',
     category_en: data.category_en || '',
     emoji: data.emoji || '',
+    image: data.image || '',
     publishedAt: data.publishedAt || '',
     featured: data.featured || false,
     content,

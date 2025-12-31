@@ -11,27 +11,148 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
 
-// 광고 관련 검색 키워드
-const SEARCH_KEYWORDS = [
-  "mobile advertising",
-  "digital advertising",
-  "ad tech",
+// AdTech 검색 키워드 (35개 - 약 100개 뉴스 수집 목표)
+const ADTECH_KEYWORDS = [
+  // Core AdTech
   "programmatic advertising",
-  "in-app advertising",
+  "real-time bidding RTB",
+  "demand side platform DSP",
+  "supply side platform SSP",
+  "ad exchange platform",
+  "ad network mobile",
+  "header bidding advertising",
+  "ad server technology",
+  // Mobile Advertising
+  "mobile advertising 2024",
+  "in-app advertising revenue",
+  "mobile ad SDK",
+  "rewarded video ads",
+  "interstitial ads",
+  "playable ads gaming",
+  "app install campaign",
+  "user acquisition mobile",
+  // Attribution & Privacy
+  "mobile attribution tracking",
+  "SKAdNetwork SKAN iOS",
+  "Privacy Sandbox Android",
+  "IDFA deprecation iOS",
+  "ATT app tracking transparency",
+  "privacy-first advertising",
+  "cookieless advertising",
+  // Video & CTV
+  "CTV connected TV advertising",
+  "OTT streaming ads",
+  "video advertising platform",
+  "AVOD advertising",
+  "programmatic TV ads",
+  // Retail Media
+  "retail media network",
+  "commerce media advertising",
+  "Amazon advertising news",
+  "shoppable ads retail",
+  // Ad Fraud & Verification
+  "ad fraud prevention",
+  "brand safety advertising",
+];
+
+// MarTech 검색 키워드 (35개)
+const MARTECH_KEYWORDS = [
+  // MMP Vendors
+  "mobile measurement partner MMP",
+  "Airbridge attribution",
+  "Appsflyer mobile attribution",
+  "Adjust mobile attribution",
+  "Singular mobile attribution",
+  "Branch deep linking",
+  "Kochava mobile analytics",
+  // Analytics Platforms
+  "Amplitude product analytics",
+  "Mixpanel analytics",
+  "Firebase analytics mobile",
+  "Google Analytics 4 GA4",
+  "Heap analytics",
+  "PostHog analytics",
+  // CDP
+  "customer data platform CDP",
+  "Segment CDP",
+  "mParticle CDP",
+  "Tealium CDP",
+  "Rudderstack CDP",
+  // Engagement Platforms
+  "Braze customer engagement",
+  "CleverTap engagement",
+  "OneSignal push notification",
+  "Leanplum mobile marketing",
+  "Iterable marketing",
+  "MoEngage engagement",
+  "Insider marketing",
+  // Marketing Automation
+  "marketing automation platform",
+  "email marketing automation",
+  "push notification marketing",
+  "in-app messaging platform",
+  "lifecycle marketing",
+  "customer journey orchestration",
+  // CRM & Sales
+  "Salesforce marketing cloud",
+  "HubSpot marketing",
+  "marketing personalization",
+];
+
+// General 검색 키워드 (10개)
+const GENERAL_KEYWORDS = [
+  "digital marketing trends 2024",
+  "advertising industry news",
+  "ad spend forecast",
+  "marketing technology trends",
+  "digital advertising growth",
+  "marketing budget trends",
+  "adtech martech investment",
+  "advertising regulation news",
+  "digital marketing innovation",
+  "marketing AI automation",
+];
+
+// 모든 키워드 통합
+const SEARCH_KEYWORDS = [
+  ...ADTECH_KEYWORDS,
+  ...MARTECH_KEYWORDS,
+  ...GENERAL_KEYWORDS,
 ];
 
 // 카테고리 분류 기준
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
   adtech: [
+    // Core AdTech
     "programmatic", "rtb", "dsp", "ssp", "real-time bidding", "auction",
     "ad tech", "adtech", "mobile ad", "in-app", "app advertising",
     "rewarded ad", "interstitial", "banner ad", "video ad", "native ad",
-    "ad network", "ad exchange", "attribution", "mmp", "skadnetwork", "skan",
-    "privacy sandbox", "idfa", "att", "gaid", "advertising id"
+    "ad network", "ad exchange", "ad server", "header bidding",
+    // Attribution & Privacy
+    "skadnetwork", "skan", "privacy sandbox",
+    "idfa", "att", "gaid", "advertising id", "app tracking",
+    "cookieless", "privacy-first",
+    // Video & Display
+    "ctv", "ott", "connected tv", "streaming ad", "display ad", "avod",
+    // Retail Media
+    "retail media", "commerce media", "shoppable",
+    // Ad Fraud
+    "ad fraud", "brand safety", "viewability"
   ],
   martech: [
-    "martech", "marketing tech", "marketing automation", "crm", "cdp",
-    "customer data", "analytics", "personalization", "segmentation",
+    // MMP Vendors
+    "mmp", "appsflyer", "adjust", "branch", "singular", "kochava", "airbridge",
+    "mobile measurement", "attribution",
+    // Analytics & CDP
+    "amplitude", "mixpanel", "firebase", "ga4", "google analytics",
+    "heap", "posthog", "analytics platform",
+    "cdp", "customer data platform", "segment", "mparticle", "tealium", "rudderstack",
+    // Engagement
+    "braze", "clevertap", "onesignal", "leanplum", "iterable", "moengage", "insider",
+    // CRM & Marketing Automation
+    "salesforce", "hubspot", "marketing cloud",
+    "martech", "marketing tech", "marketing automation", "crm",
+    "customer data", "personalization", "segmentation",
     "email marketing", "push notification", "engagement", "retention",
     "lifecycle", "journey", "campaign management", "a/b test"
   ],
@@ -81,7 +202,7 @@ async function fetchGoogleNewsRSS(keyword: string): Promise<NewsItem[]> {
       }
     }
 
-    return items.slice(0, 5); // 키워드당 최대 5개
+    return items.slice(0, 3); // 키워드당 최대 3개 (총 ~100개 수집 목표)
   } catch (error) {
     console.error(`Error fetching RSS for ${keyword}:`, error);
     return [];
@@ -111,11 +232,19 @@ function isRecent(pubDate: string): boolean {
   return hoursDiff <= 24;
 }
 
-// Gemini API로 뉴스 요약 및 번역
+// Gemini API rate limit: 5 requests per minute (free tier)
+const ITEMS_PER_BATCH = 5;
+const ITEM_DELAY_MS = 12000; // 12s delay between items (5 per minute)
+const KEYWORDS_PER_BATCH = 20; // 한 번에 수집할 키워드 수
+
 async function processWithGemini(newsItems: NewsItem[]): Promise<ProcessedNews[]> {
   const results: ProcessedNews[] = [];
+  const itemsToProcess = newsItems.slice(0, ITEMS_PER_BATCH);
 
-  for (const item of newsItems) {
+  console.log(`Processing ${itemsToProcess.length} items (${newsItems.length} total pending)`);
+
+  for (let i = 0; i < itemsToProcess.length; i++) {
+    const item = itemsToProcess[i];
     try {
       const prompt = `You are a news summarizer for the advertising industry.
 
@@ -134,7 +263,7 @@ Respond in this exact JSON format:
 }`;
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -149,10 +278,14 @@ Respond in this exact JSON format:
       );
 
       const data = await response.json();
-      console.log("Gemini response:", JSON.stringify(data).slice(0, 500));
+
+      // Rate limit 에러 체크
+      if (data.error?.code === 429) {
+        console.log("Rate limit hit, stopping batch");
+        break;
+      }
 
       const textContent = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-      console.log("Text content:", textContent.slice(0, 200));
 
       // JSON 파싱
       const jsonMatch = textContent.match(/\{[\s\S]*\}/);
@@ -170,13 +303,16 @@ Respond in this exact JSON format:
           source_url: item.link,
           published_at: new Date(item.pubDate).toISOString(),
         });
+        console.log(`✓ [${i + 1}/${itemsToProcess.length}] ${item.title.slice(0, 50)}...`);
       }
     } catch (error) {
-      console.error(`Error processing news item:`, error);
+      console.error(`✗ Error: ${item.title.slice(0, 50)}...`, error);
     }
 
-    // Rate limiting - 무료 티어는 분당 5개 제한 (15초 대기)
-    await new Promise((resolve) => setTimeout(resolve, 15000));
+    // 아이템 간 대기 (마지막 제외)
+    if (i < itemsToProcess.length - 1) {
+      await new Promise((resolve) => setTimeout(resolve, ITEM_DELAY_MS));
+    }
   }
 
   return results;
@@ -199,7 +335,7 @@ serve(async (req) => {
     for (const keyword of SEARCH_KEYWORDS) {
       const news = await fetchGoogleNewsRSS(keyword);
       allNews.push(...news);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Rate limiting
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Rate limiting
     }
 
     // 중복 제거 (URL 기준)
@@ -213,29 +349,59 @@ serve(async (req) => {
     const recentNews = uniqueNews.filter((item) => isRecent(item.pubDate));
     console.log(`Recent news (24h): ${recentNews.length} items`);
 
-    // 2. 기존 URL 체크 (중복 방지)
-    const { data: existingUrls } = await supabase
+    // 2. 기존 raw URL 체크 (중복 방지)
+    const { data: existingRawUrls } = await supabase
+      .from("ad_news_raw")
+      .select("source_url");
+
+    const existingRawUrlSet = new Set(existingRawUrls?.map((r) => r.source_url) || []);
+    const newRawItems = recentNews.filter((item) => !existingRawUrlSet.has(item.link));
+
+    console.log(`${newRawItems.length} new raw items to save`);
+
+    // 3. Raw 뉴스 저장 (모든 뉴스 링크)
+    if (newRawItems.length > 0) {
+      const rawNewsData = newRawItems.map((item) => ({
+        title: item.title,
+        source: item.source,
+        source_url: item.link,
+        category: classifyCategory(item.title, ""),
+        published_at: new Date(item.pubDate).toISOString(),
+        is_processed: false,
+      }));
+
+      const { error: rawError } = await supabase.from("ad_news_raw").insert(rawNewsData);
+      if (rawError) {
+        console.error("Raw news insert error:", rawError);
+      } else {
+        console.log(`Saved ${rawNewsData.length} raw news items`);
+      }
+    }
+
+    // 4. Gemini 처리용 기존 URL 체크
+    const { data: existingProcessedUrls } = await supabase
       .from("ad_news")
       .select("source_url");
 
-    const existingUrlSet = new Set(existingUrls?.map((r) => r.source_url) || []);
-    const newItems = recentNews.filter((item) => !existingUrlSet.has(item.link));
+    const existingProcessedUrlSet = new Set(existingProcessedUrls?.map((r) => r.source_url) || []);
+    const newItemsForGemini = newRawItems.filter((item) => !existingProcessedUrlSet.has(item.link));
 
-    console.log(`${newItems.length} new items to process`);
-    console.log("First 3 new items:", newItems.slice(0, 3).map(i => i.title));
-
-    if (newItems.length === 0) {
+    if (newItemsForGemini.length === 0) {
       return new Response(
-        JSON.stringify({ message: "No new news items found", count: 0 }),
+        JSON.stringify({
+          message: "Raw news saved, no new items for Gemini",
+          rawSaved: newRawItems.length,
+          processed: 0
+        }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // 3. Gemini로 처리 (무료 티어 제한으로 최대 5개)
-    console.log("Processing with Gemini...");
-    const processedNews = await processWithGemini(newItems.slice(0, 5));
+    // 5. Gemini로 처리 (배치 처리로 최대 20개)
+    console.log(`Processing ${newItemsForGemini.length} items with Gemini...`);
+    const processedNews = await processWithGemini(newItemsForGemini);
 
-    // 4. DB에 저장
+    // 6. 처리된 뉴스 DB에 저장
     if (processedNews.length > 0) {
       const { error } = await supabase.from("ad_news").insert(processedNews);
 
@@ -243,20 +409,49 @@ serve(async (req) => {
         console.error("Insert error:", error);
         throw error;
       }
+
+      // Raw 테이블에서 처리됨 표시
+      const processedUrls = processedNews.map((n) => n.source_url);
+      await supabase
+        .from("ad_news_raw")
+        .update({ is_processed: true })
+        .in("source_url", processedUrls);
     }
 
-    // 5. 오래된 뉴스 정리 (30일 이상)
-    await supabase
-      .from("ad_news")
-      .delete()
-      .lt("created_at", new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
+    // 7. Daily Digest 업데이트
+    const today = new Date().toISOString().split("T")[0];
+    const { data: todayRaw } = await supabase
+      .from("ad_news_raw")
+      .select("category")
+      .gte("collected_at", today);
+
+    const counts = {
+      adtech: todayRaw?.filter((n) => n.category === "adtech").length || 0,
+      martech: todayRaw?.filter((n) => n.category === "martech").length || 0,
+      general: todayRaw?.filter((n) => n.category === "general").length || 0,
+    };
+
+    await supabase.from("ad_news_digest").upsert({
+      digest_date: today,
+      total_news_count: todayRaw?.length || 0,
+      adtech_count: counts.adtech,
+      martech_count: counts.martech,
+      general_count: counts.general,
+    }, { onConflict: "digest_date" });
+
+    // 8. 오래된 뉴스 정리 (30일 이상)
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    await supabase.from("ad_news").delete().lt("created_at", thirtyDaysAgo);
+    await supabase.from("ad_news_raw").delete().lt("collected_at", thirtyDaysAgo);
 
     return new Response(
       JSON.stringify({
         message: "News fetch completed",
         fetched: uniqueNews.length,
         recentNews: recentNews.length,
+        rawSaved: newRawItems.length,
         processed: processedNews.length,
+        todayCounts: counts,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

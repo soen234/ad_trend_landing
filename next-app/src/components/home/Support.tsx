@@ -6,9 +6,9 @@ export default function Support() {
   const { t } = useLanguage();
 
   return (
-    <section className="bg-[rgba(255,255,255,0.03)] rounded-[20px] p-12 my-10 text-center">
-      <h2 className="text-3xl font-bold mb-4">{t('support.title')}</h2>
-      <p className="text-[var(--color-muted)] mb-6">{t('support.description')}</p>
+    <section className="support">
+      <h2>{t('support.title')}</h2>
+      <p>{t('support.description')}</p>
       <a href="mailto:soen234@gmail.com?subject=[TAT] Support" className="btn-gradient">
         <svg
           width="20"
