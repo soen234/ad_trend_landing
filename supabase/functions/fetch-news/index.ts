@@ -232,9 +232,11 @@ function isRecent(pubDate: string): boolean {
   return hoursDiff <= 24;
 }
 
-// Gemini API rate limit: 5 requests per minute (free tier)
-const ITEMS_PER_BATCH = 5;
-const ITEM_DELAY_MS = 12000; // 12s delay between items (5 per minute)
+// Gemini API rate limit: 5 RPM, 20 RPD (free tier)
+// Cron runs 4 times/day (09:00, 12:00, 15:00, 18:00 KST)
+// Each run processes 4-5 items = 16-20 items/day total
+const ITEMS_PER_BATCH = 4; // 한 번에 4개 처리 (60초 타임아웃 내 안전하게)
+const ITEM_DELAY_MS = 13000; // 13s delay between items (분당 4-5개)
 const KEYWORDS_PER_BATCH = 20; // 한 번에 수집할 키워드 수
 
 async function processWithGemini(newsItems: NewsItem[]): Promise<ProcessedNews[]> {
