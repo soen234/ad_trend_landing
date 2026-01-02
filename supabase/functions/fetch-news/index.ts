@@ -415,18 +415,27 @@ serve(async (req) => {
       }
     }
 
-    // 4. Gemini 처리용 기존 URL 체크
-    const { data: existingProcessedUrls } = await supabase
-      .from("ad_news")
-      .select("source_url");
+    // 4. 미처리 뉴스 가져오기 (is_processed = false)
+    const { data: unprocessedRaw } = await supabase
+      .from("ad_news_raw")
+      .select("title, source, source_url, published_at")
+      .eq("is_processed", false)
+      .order("published_at", { ascending: false })
+      .limit(ITEMS_PER_BATCH);
 
-    const existingProcessedUrlSet = new Set(existingProcessedUrls?.map((r) => r.source_url) || []);
-    const newItemsForGemini = newRawItems.filter((item) => !existingProcessedUrlSet.has(item.link));
+    const itemsForGemini = (unprocessedRaw || []).map((item) => ({
+      title: item.title,
+      link: item.source_url,
+      pubDate: item.published_at,
+      source: item.source,
+    }));
 
-    if (newItemsForGemini.length === 0) {
+    console.log(`Unprocessed items in raw: ${itemsForGemini.length}`);
+
+    if (itemsForGemini.length === 0) {
       return new Response(
         JSON.stringify({
-          message: "Raw news saved, no new items for Gemini",
+          message: "Raw news saved, no unprocessed items for Gemini",
           rawSaved: newRawItems.length,
           processed: 0
         }),
@@ -434,9 +443,9 @@ serve(async (req) => {
       );
     }
 
-    // 5. Gemini로 처리 (배치 처리로 최대 20개)
-    console.log(`Processing ${newItemsForGemini.length} items with Gemini...`);
-    const processedNews = await processWithGemini(newItemsForGemini);
+    // 5. Gemini로 처리
+    console.log(`Processing ${itemsForGemini.length} items with Gemini...`);
+    const processedNews = await processWithGemini(itemsForGemini);
 
     // 6. 처리된 뉴스 DB에 저장
     if (processedNews.length > 0) {
