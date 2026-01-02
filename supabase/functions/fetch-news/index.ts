@@ -241,7 +241,7 @@ const KEYWORDS_PER_BATCH = 20; // 한 번에 수집할 키워드 수
 
 // Gemini 모델 우선순위 (메인 → 백업)
 const GEMINI_MODELS = [
-  "gemini-3-flash",
+  "gemini-3-flash-preview",
   "gemini-2.5-flash-lite",
 ];
 
