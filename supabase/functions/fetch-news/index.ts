@@ -239,6 +239,55 @@ const ITEMS_PER_BATCH = 4; // 한 번에 4개 처리 (60초 타임아웃 내 안
 const ITEM_DELAY_MS = 13000; // 13s delay between items (분당 4-5개)
 const KEYWORDS_PER_BATCH = 20; // 한 번에 수집할 키워드 수
 
+// Gemini 모델 우선순위 (메인 → 백업)
+const GEMINI_MODELS = [
+  "gemini-3-flash",
+  "gemini-2.5-flash-lite",
+];
+
+async function callGeminiWithFallback(prompt: string): Promise<{ data: unknown; model: string } | null> {
+  for (const model of GEMINI_MODELS) {
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              temperature: 0.3,
+              maxOutputTokens: 1024,
+            },
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      // Rate limit 에러면 다음 모델 시도
+      if (data.error) {
+        console.log(`${model} error: ${data.error.status || data.error.code}`);
+        if (data.error.code === 429 || data.error.status === "RESOURCE_EXHAUSTED") {
+          console.log(`${model} rate limited, trying next model...`);
+          continue;
+        }
+        // 다른 에러도 다음 모델 시도
+        continue;
+      }
+
+      console.log(`Using model: ${model}`);
+      return { data, model };
+    } catch (error) {
+      console.log(`${model} fetch error, trying next...`);
+      continue;
+    }
+  }
+
+  console.log("All models exhausted");
+  return null;
+}
+
 async function processWithGemini(newsItems: NewsItem[]): Promise<ProcessedNews[]> {
   const results: ProcessedNews[] = [];
   const itemsToProcess = newsItems.slice(0, ITEMS_PER_BATCH);
@@ -264,30 +313,16 @@ Respond in this exact JSON format:
   "title_ko": "Korean title here"
 }`;
 
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: {
-              temperature: 0.3,
-              maxOutputTokens: 1024,
-            },
-          }),
-        }
-      );
+      const result = await callGeminiWithFallback(prompt);
 
-      const data = await response.json();
-
-      // Rate limit 에러 체크
-      if (data.error?.code === 429) {
-        console.log("Rate limit hit, stopping batch");
+      if (!result) {
+        console.log("All models rate limited, stopping batch");
         break;
       }
 
-      const textContent = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      const { data } = result;
+      const textContent = (data as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> })
+        ?.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
       // JSON 파싱
       const jsonMatch = textContent.match(/\{[\s\S]*\}/);
