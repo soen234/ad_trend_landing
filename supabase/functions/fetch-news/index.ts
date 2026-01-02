@@ -224,12 +224,12 @@ function classifyCategory(title: string, summary: string): string {
   return "general"; // 기본값
 }
 
-// 최근 24시간 내 뉴스인지 확인
+// 최근 48시간 내 뉴스인지 확인
 function isRecent(pubDate: string): boolean {
   const newsDate = new Date(pubDate);
   const now = new Date();
   const hoursDiff = (now.getTime() - newsDate.getTime()) / (1000 * 60 * 60);
-  return hoursDiff <= 24;
+  return hoursDiff <= 48;
 }
 
 // Gemini API rate limit: 5 RPM, 20 RPD (free tier)
