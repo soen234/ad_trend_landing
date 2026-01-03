@@ -168,7 +168,7 @@ export default function NewsPage() {
             {lang === 'ko' && digest.summary_ko ? digest.summary_ko : digest.summary}
           </p>
 
-          {/* Category Counts - Smaller, Secondary */}
+          {/* Category Counts - Smaller, Secondary (실제 뉴스 갯수 기반) */}
           <div className="flex items-center gap-6 pt-6 border-t border-[rgba(255,255,255,0.1)]">
             <span className="text-sm text-[var(--color-muted)]">
               {lang === 'ko' ? '오늘의 뉴스' : "Today's news"}:
@@ -176,15 +176,15 @@ export default function NewsPage() {
             <div className="flex items-center gap-4">
               <span className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#a78bfa]"></span>
-                <span className="text-sm text-[var(--color-muted)]">AdTech {digest.adtech_count}</span>
+                <span className="text-sm text-[var(--color-muted)]">AdTech {news.filter(n => n.category === 'adtech').length}</span>
               </span>
               <span className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#4ade80]"></span>
-                <span className="text-sm text-[var(--color-muted)]">MarTech {digest.martech_count}</span>
+                <span className="text-sm text-[var(--color-muted)]">MarTech {news.filter(n => n.category === 'martech').length}</span>
               </span>
               <span className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#60a5fa]"></span>
-                <span className="text-sm text-[var(--color-muted)]">General {digest.general_count}</span>
+                <span className="text-sm text-[var(--color-muted)]">General {news.filter(n => n.category === 'general').length}</span>
               </span>
             </div>
           </div>
