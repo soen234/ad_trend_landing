@@ -36,20 +36,26 @@ BEGIN
 END;
 $$;
 
--- Schedule fetch-news to run 4 times a day (UTC times = KST -9)
+-- Schedule fetch-news to run 6 times a day (UTC times = KST -9)
+-- 21:00 UTC = 06:00 KST (next day)
 -- 00:00 UTC = 09:00 KST
 -- 03:00 UTC = 12:00 KST
 -- 06:00 UTC = 15:00 KST
 -- 09:00 UTC = 18:00 KST
+-- 12:00 UTC = 21:00 KST
 
 -- Remove existing jobs if any
+SELECT cron.unschedule('fetch-news-06') WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'fetch-news-06');
 SELECT cron.unschedule('fetch-news-09') WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'fetch-news-09');
 SELECT cron.unschedule('fetch-news-12') WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'fetch-news-12');
 SELECT cron.unschedule('fetch-news-15') WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'fetch-news-15');
 SELECT cron.unschedule('fetch-news-18') WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'fetch-news-18');
+SELECT cron.unschedule('fetch-news-21') WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'fetch-news-21');
 
 -- Schedule new jobs
+SELECT cron.schedule('fetch-news-06', '0 21 * * *', 'SELECT call_fetch_news()');
 SELECT cron.schedule('fetch-news-09', '0 0 * * *', 'SELECT call_fetch_news()');
 SELECT cron.schedule('fetch-news-12', '0 3 * * *', 'SELECT call_fetch_news()');
 SELECT cron.schedule('fetch-news-15', '0 6 * * *', 'SELECT call_fetch_news()');
 SELECT cron.schedule('fetch-news-18', '0 9 * * *', 'SELECT call_fetch_news()');
+SELECT cron.schedule('fetch-news-21', '0 12 * * *', 'SELECT call_fetch_news()');

@@ -5,6 +5,23 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Convert UTC timestamp to KST date string (YYYY-MM-DD)
+function toKSTDate(utcTimestamp: string): string {
+  const date = new Date(utcTimestamp);
+  // Add 9 hours for KST
+  const kstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+  return kstDate.toISOString().split('T')[0];
+}
+
+// Get KST date range for a given KST date (returns UTC timestamps)
+function getKSTDateRange(kstDate: string): { start: string; end: string } {
+  // KST midnight = UTC previous day 15:00
+  // e.g., 2026-01-03 00:00 KST = 2026-01-02 15:00 UTC
+  const startUTC = new Date(`${kstDate}T00:00:00+09:00`).toISOString();
+  const endUTC = new Date(`${kstDate}T23:59:59.999+09:00`).toISOString();
+  return { start: startUTC, end: endUTC };
+}
+
 export interface NewsItem {
   id: string;
   title: string;
@@ -58,16 +75,15 @@ export async function getAllNews(): Promise<NewsItem[]> {
   return data || [];
 }
 
-// Get news by date (YYYY-MM-DD)
+// Get news by KST date (YYYY-MM-DD)
 export async function getNewsByDate(date: string): Promise<NewsItem[]> {
-  const startOfDay = `${date}T00:00:00.000Z`;
-  const endOfDay = `${date}T23:59:59.999Z`;
+  const { start, end } = getKSTDateRange(date);
 
   const { data, error } = await supabase
     .from('ad_news')
     .select('*')
-    .gte('published_at', startOfDay)
-    .lte('published_at', endOfDay)
+    .gte('published_at', start)
+    .lte('published_at', end)
     .order('published_at', { ascending: false });
 
   if (error) {
@@ -78,7 +94,7 @@ export async function getNewsByDate(date: string): Promise<NewsItem[]> {
   return data || [];
 }
 
-// Get available dates with news
+// Get available dates with news (in KST)
 export async function getAvailableDates(): Promise<string[]> {
   const { data, error } = await supabase
     .from('ad_news')
@@ -90,11 +106,11 @@ export async function getAvailableDates(): Promise<string[]> {
     return [];
   }
 
-  // Extract unique dates
+  // Extract unique dates in KST
   const dates = new Set<string>();
   data?.forEach((item) => {
-    const date = item.published_at.split('T')[0];
-    dates.add(date);
+    const kstDate = toKSTDate(item.published_at);
+    dates.add(kstDate);
   });
 
   return Array.from(dates);

@@ -18,6 +18,20 @@ interface NewsItem {
   category: string;
 }
 
+// Convert UTC timestamp to KST date string (YYYY-MM-DD)
+function toKSTDate(utcTimestamp: string): string {
+  const date = new Date(utcTimestamp);
+  const kstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+  return kstDate.toISOString().split("T")[0];
+}
+
+// Get KST date range for a given KST date (returns UTC timestamps)
+function getKSTDateRange(kstDate: string): { start: string; end: string } {
+  const startUTC = new Date(`${kstDate}T00:00:00+09:00`).toISOString();
+  const endUTC = new Date(`${kstDate}T23:59:59.999+09:00`).toISOString();
+  return { start: startUTC, end: endUTC };
+}
+
 serve(async (req) => {
   // CORS preflight
   if (req.method === "OPTIONS") {
@@ -27,15 +41,30 @@ serve(async (req) => {
   try {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Get today's date (or specific date from request)
+    // Get date from request, or find most recent date with news
     const { date } = await req.json().catch(() => ({}));
-    const targetDate = date || new Date().toISOString().split("T")[0];
+    let targetDate = date;
 
-    console.log(`Generating digest for ${targetDate}`);
+    if (!targetDate) {
+      // Find the most recent KST date with news
+      const { data: latestNews } = await supabase
+        .from("ad_news")
+        .select("published_at")
+        .order("published_at", { ascending: false })
+        .limit(1);
 
-    // Fetch today's processed news
-    const startOfDay = `${targetDate}T00:00:00.000Z`;
-    const endOfDay = `${targetDate}T23:59:59.999Z`;
+      if (latestNews && latestNews.length > 0) {
+        targetDate = toKSTDate(latestNews[0].published_at);
+      } else {
+        // Fallback to today in KST
+        targetDate = toKSTDate(new Date().toISOString());
+      }
+    }
+
+    console.log(`Generating digest for ${targetDate} (KST)`);
+
+    // Fetch news for the target KST date
+    const { start: startOfDay, end: endOfDay } = getKSTDateRange(targetDate);
 
     const { data: newsItems, error: newsError } = await supabase
       .from("ad_news")
