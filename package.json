@@ -20,5 +20,8 @@
   "homepage": "https://github.com/soen234/ad_trend_landing#readme",
   "devDependencies": {
     "supabase": "^2.70.5"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.6.1"
   }
 }

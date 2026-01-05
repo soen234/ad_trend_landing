@@ -6,8 +6,10 @@ export const metadata = {
   description: 'Sharing the latest trends and insights in mobile advertising',
 };
 
-export default function BlogPage() {
-  const posts = getAllPosts();
+export const dynamic = 'force-dynamic';
+
+export default async function BlogPage() {
+  const posts = await getAllPosts();
 
   return <BlogList posts={posts} />;
 }

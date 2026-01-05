@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { MDXRemote } from 'next-mdx-remote/rsc';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { useLanguage } from '@/hooks/useLanguage';
 import AdBanner from '@/components/ads/AdBanner';
 import type { BlogPost } from '@/lib/mdx';
@@ -11,50 +12,60 @@ interface BlogPostContentProps {
 }
 
 const components = {
-  h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h1 className="text-3xl font-bold mt-8 mb-4 gradient-text" {...props} />
+  h1: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
+    <h1 className="text-3xl font-bold mt-8 mb-4 gradient-text" {...props}>{children}</h1>
   ),
-  h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h2 className="text-2xl font-bold mt-8 mb-4 text-white" {...props} />
+  h2: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
+    <h2 className="text-2xl font-bold mt-8 mb-4 text-white" {...props}>{children}</h2>
   ),
-  h3: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h3 className="text-xl font-bold mt-6 mb-3 text-white" {...props} />
+  h3: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
+    <h3 className="text-xl font-bold mt-6 mb-3 text-white" {...props}>{children}</h3>
   ),
-  p: (props: React.HTMLAttributes<HTMLParagraphElement>) => (
-    <p className="text-[var(--color-muted)] leading-relaxed mb-4" {...props} />
+  p: ({ children, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
+    <p className="text-[var(--color-muted)] leading-relaxed mb-4" {...props}>{children}</p>
   ),
-  ul: (props: React.HTMLAttributes<HTMLUListElement>) => (
-    <ul className="list-disc list-inside text-[var(--color-muted)] mb-4 space-y-2" {...props} />
+  ul: ({ children, ...props }: React.HTMLAttributes<HTMLUListElement>) => (
+    <ul className="list-disc list-inside text-[var(--color-muted)] mb-4 space-y-2" {...props}>{children}</ul>
   ),
-  ol: (props: React.HTMLAttributes<HTMLOListElement>) => (
-    <ol className="list-decimal list-inside text-[var(--color-muted)] mb-4 space-y-2" {...props} />
+  ol: ({ children, ...props }: React.HTMLAttributes<HTMLOListElement>) => (
+    <ol className="list-decimal list-inside text-[var(--color-muted)] mb-4 space-y-2" {...props}>{children}</ol>
   ),
-  li: (props: React.HTMLAttributes<HTMLLIElement>) => <li className="ml-4" {...props} />,
-  strong: (props: React.HTMLAttributes<HTMLElement>) => (
-    <strong className="text-white font-semibold" {...props} />
+  li: ({ children, ...props }: React.HTMLAttributes<HTMLLIElement>) => (
+    <li className="ml-4" {...props}>{children}</li>
   ),
-  blockquote: (props: React.HTMLAttributes<HTMLQuoteElement>) => (
-    <blockquote
-      className="border-l-4 border-[var(--color-accent-green)] pl-4 my-4 italic text-[var(--color-muted)]"
-      {...props}
-    />
+  strong: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
+    <strong className="text-white font-semibold" {...props}>{children}</strong>
   ),
-  code: (props: React.HTMLAttributes<HTMLElement>) => (
-    <code className="bg-[var(--color-card)] px-2 py-1 rounded text-sm text-[var(--color-accent-cyan)]" {...props} />
+  blockquote: ({ children, ...props }: React.HTMLAttributes<HTMLQuoteElement>) => (
+    <blockquote className="border-l-4 border-[var(--color-accent-green)] pl-4 my-4 italic text-[var(--color-muted)]" {...props}>
+      {children}
+    </blockquote>
   ),
-  pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
-    <pre className="bg-[var(--color-card)] p-4 rounded-lg overflow-x-auto my-4" {...props} />
+  code: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
+    <code className="bg-[var(--color-card)] px-2 py-1 rounded text-sm text-[var(--color-accent-cyan)]" {...props}>{children}</code>
   ),
-  table: (props: React.HTMLAttributes<HTMLTableElement>) => (
-    <div className="overflow-x-auto my-4">
-      <table className="w-full border-collapse" {...props} />
+  pre: ({ children, ...props }: React.HTMLAttributes<HTMLPreElement>) => (
+    <pre className="bg-[var(--color-card)] p-4 rounded-lg overflow-x-auto my-4" {...props}>{children}</pre>
+  ),
+  table: ({ children, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
+    <div className="overflow-x-auto my-6">
+      <table className="w-full border-collapse" {...props}>{children}</table>
     </div>
   ),
-  th: (props: React.HTMLAttributes<HTMLTableCellElement>) => (
-    <th className="p-3 text-left border-b border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-accent-green)] font-semibold" {...props} />
+  thead: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
+    <thead {...props}>{children}</thead>
   ),
-  td: (props: React.HTMLAttributes<HTMLTableCellElement>) => (
-    <td className="p-3 border-b border-[var(--color-border)] text-[var(--color-muted)]" {...props} />
+  tbody: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
+    <tbody {...props}>{children}</tbody>
+  ),
+  tr: ({ children, ...props }: React.HTMLAttributes<HTMLTableRowElement>) => (
+    <tr {...props}>{children}</tr>
+  ),
+  th: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
+    <th className="p-3 text-left border-b border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-accent-green)] font-semibold" {...props}>{children}</th>
+  ),
+  td: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
+    <td className="p-3 border-b border-[var(--color-border)] text-[var(--color-muted)]" {...props}>{children}</td>
   ),
 };
 
@@ -102,7 +113,9 @@ export default function BlogPostContent({ post }: BlogPostContentProps) {
 
       {/* Content */}
       <div className="prose prose-invert max-w-none">
-        <MDXRemote source={post.content} components={components} />
+        <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+          {post.content}
+        </ReactMarkdown>
       </div>
 
       <AdBanner slot="0987654321" />

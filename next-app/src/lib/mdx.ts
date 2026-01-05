@@ -1,6 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
+import { getAllBlogsFromDB, getBlogBySlugFromDB, type BlogPost as DBBlogPost } from './supabase';
 
 export interface BlogPost {
   slug: string;
@@ -17,76 +15,69 @@ export interface BlogPost {
   content: string;
 }
 
-const postsDirectory = path.join(process.cwd(), 'src/content/blog');
-
-export function getAllPosts(): BlogPost[] {
-  if (!fs.existsSync(postsDirectory)) {
-    return [];
-  }
-
-  const fileNames = fs.readdirSync(postsDirectory);
-  const allPostsData = fileNames
-    .filter((fileName) => fileName.endsWith('.mdx'))
-    .map((fileName) => {
-      const slug = fileName.replace(/\.mdx$/, '');
-      const fullPath = path.join(postsDirectory, fileName);
-      const fileContents = fs.readFileSync(fullPath, 'utf8');
-      const { data, content } = matter(fileContents);
-
-      return {
-        slug,
-        title_ko: data.title_ko || '',
-        title_en: data.title_en || '',
-        description_ko: data.description_ko || '',
-        description_en: data.description_en || '',
-        category_ko: data.category_ko || '',
-        category_en: data.category_en || '',
-        emoji: data.emoji || '',
-        image: data.image || '',
-        publishedAt: data.publishedAt || '',
-        featured: data.featured || false,
-        content,
-      };
-    });
-
-  return allPostsData.sort((a, b) =>
-    new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-  );
-}
-
-export function getPostBySlug(slug: string): BlogPost | null {
-  const fullPath = path.join(postsDirectory, `${slug}.mdx`);
-
-  if (!fs.existsSync(fullPath)) {
-    return null;
-  }
-
-  const fileContents = fs.readFileSync(fullPath, 'utf8');
-  const { data, content } = matter(fileContents);
+// Convert DB blog to unified BlogPost type
+function dbBlogToBlogPost(dbBlog: DBBlogPost): BlogPost {
+  // Format published_at to readable date
+  const date = new Date(dbBlog.published_at);
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const publishedAt = `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
 
   return {
-    slug,
-    title_ko: data.title_ko || '',
-    title_en: data.title_en || '',
-    description_ko: data.description_ko || '',
-    description_en: data.description_en || '',
-    category_ko: data.category_ko || '',
-    category_en: data.category_en || '',
-    emoji: data.emoji || '',
-    image: data.image || '',
-    publishedAt: data.publishedAt || '',
-    featured: data.featured || false,
-    content,
+    slug: dbBlog.slug,
+    title_ko: dbBlog.title_ko,
+    title_en: dbBlog.title_en,
+    description_ko: dbBlog.description_ko,
+    description_en: dbBlog.description_en,
+    category_ko: dbBlog.category_ko,
+    category_en: dbBlog.category_en,
+    emoji: dbBlog.emoji,
+    image: dbBlog.image_url || undefined,
+    publishedAt,
+    featured: dbBlog.featured,
+    content: dbBlog.content,
   };
 }
 
-export function getAllPostSlugs(): string[] {
-  if (!fs.existsSync(postsDirectory)) {
+// Get all posts from DB
+export async function getAllPosts(): Promise<BlogPost[]> {
+  try {
+    const dbBlogs = await getAllBlogsFromDB();
+    return dbBlogs.map(dbBlogToBlogPost);
+  } catch (error) {
+    console.error('Error fetching blogs:', error);
     return [];
   }
-
-  const fileNames = fs.readdirSync(postsDirectory);
-  return fileNames
-    .filter((fileName) => fileName.endsWith('.mdx'))
-    .map((fileName) => fileName.replace(/\.mdx$/, ''));
 }
+
+// Alias for backward compatibility
+export const getAllPostsWithDB = getAllPosts;
+
+// Get post by slug from DB
+export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
+  try {
+    const dbBlog = await getBlogBySlugFromDB(slug);
+    if (dbBlog) {
+      return dbBlogToBlogPost(dbBlog);
+    }
+  } catch (error) {
+    console.error('Error fetching blog:', error);
+  }
+  return null;
+}
+
+// Alias for backward compatibility
+export const getPostBySlugWithDB = getPostBySlug;
+
+// Get all post slugs from DB
+export async function getAllPostSlugs(): Promise<string[]> {
+  try {
+    const dbBlogs = await getAllBlogsFromDB();
+    return dbBlogs.map((b) => b.slug);
+  } catch (error) {
+    console.error('Error fetching blog slugs:', error);
+    return [];
+  }
+}
+
+// Alias for backward compatibility
+export const getAllPostSlugsWithDB = getAllPostSlugs;

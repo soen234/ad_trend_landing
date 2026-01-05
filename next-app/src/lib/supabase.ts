@@ -152,3 +152,69 @@ export async function getLatestDigest(): Promise<NewsDigest | null> {
 
   return data;
 }
+
+// Blog types
+export interface BlogPost {
+  id: number;
+  slug: string;
+  title_ko: string;
+  title_en: string;
+  description_ko: string;
+  description_en: string;
+  content: string;
+  category_ko: string;
+  category_en: string;
+  emoji: string;
+  image_url?: string;
+  featured: boolean;
+  published_at: string;
+}
+
+// Get all blogs from DB
+export async function getAllBlogsFromDB(): Promise<BlogPost[]> {
+  const { data, error } = await supabase
+    .from('ad_blog')
+    .select('*')
+    .order('published_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching blogs:', error);
+    return [];
+  }
+
+  return data || [];
+}
+
+// Get blog by slug from DB
+export async function getBlogBySlugFromDB(slug: string): Promise<BlogPost | null> {
+  const { data, error } = await supabase
+    .from('ad_blog')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+
+  if (error) {
+    if (error.code !== 'PGRST116') {
+      console.error('Error fetching blog:', error);
+    }
+    return null;
+  }
+
+  return data;
+}
+
+// Get latest blogs from DB
+export async function getLatestBlogsFromDB(limit: number = 3): Promise<BlogPost[]> {
+  const { data, error } = await supabase
+    .from('ad_blog')
+    .select('*')
+    .order('published_at', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error('Error fetching latest blogs:', error);
+    return [];
+  }
+
+  return data || [];
+}
