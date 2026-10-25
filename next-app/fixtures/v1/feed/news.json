@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-25T21:04:00Z",
+  "items": [
+    {
+      "id": "2c325bd8d30a",
+      "section": "news",
+      "title": "Fixture: Retail media budgets keep growing as CPMs on the open web slide",
+      "url": "https://example.com/fixture/a0ae53837b39",
+      "source": "AdExchanger",
+      "publishedAt": "2026-10-25T13:30:00Z",
+      "summary": "Agency planners say retail media now takes a larger share of incremental budgets, while open-web CPMs fell for a third straight quarter.",
+      "platforms": [
+        "amazon",
+        "other"
+      ],
+      "tags": [
+        "retail media",
+        "budgets"
+      ],
+      "importance": 4,
+      "roles": {
+        "performance": {
+          "relevance": 2,
+          "soWhat": "Expect cheaper open-web inventory; test prospecting there while CPMs stay soft."
+        },
+        "ua": {
+          "relevance": 1,
+          "soWhat": "Retail media rarely drives installs; keep it out of your UA plan for now."
+        },
+        "brand": {
+          "relevance": 3,
+          "soWhat": "Retail networks are now a brand channel; ask for reach and frequency, not just ROAS."
+        }
+      },
+      "enriched": true
+    },
+    {
+      "id": "125604afe0ec",
+      "section": "news",
+      "title": "Fixture: Apple expands Search Ads to two more App Store placements",
+      "url": "https://example.com/fixture/59b41eae7477",
+      "source": "Business of Apps",
+      "publishedAt": "2026-10-25T07:20:00Z",
+      "summary": "Apple is adding sponsored results to more App Store surfaces, giving app marketers more paid inventory beyond the search results page.",
+      "platforms": [
+        "apple"
+      ],
+      "tags": [
+        "app store",
+        "search ads"
+      ],
+      "importance": 4,
+      "roles": {
+        "performance": {
+          "relevance": 1,
+          "soWhat": "Only relevant if you run app campaigns alongside web."
+        },
+        "ua": {
+          "relevance": 3,
+          "soWhat": "New placements usually launch with low competition; set up a separate campaign to test early CPIs."
+        },
+        "brand": {
+          "relevance": 1,
+          "soWhat": "More paid App Store real estate means organic brand presence matters less on its own."
+        }
+      },
+      "enriched": true
+    },
+    {
+      "id": "6d0592974dfa",
+      "section": "news",
+      "title": "Fixture: Connected TV ad spend passes linear for the first time in one US market study",
+      "url": "https://example.com/fixture/55e8aa533922",
+      "source": "Digiday",
+      "publishedAt": "2026-10-24T18:15:00Z",
+      "summary": "A US market study reports connected TV now outspends linear TV for the brands it tracks, driven by streaming ad tiers and programmatic buying.",
+      "platforms": [
+        "other"
+      ],
+      "tags": [
+        "ctv",
+        "video"
+      ],
+      "importance": 3,
+      "roles": {
+        "performance": {
+          "relevance": 2,
+          "soWhat": "CTV is becoming measurable enough to test with conversion goals; start with a small pilot."
+        },
+        "ua": {
+          "relevance": 1,
+          "soWhat": "CTV can work for app awareness, but install attribution is still weak."
+        },
+        "brand": {
+          "relevance": 3,
+          "soWhat": "Plan TV and streaming as one video budget and compare reach across both."
+        }
+      },
+      "enriched": true
+    }
+  ]
+}

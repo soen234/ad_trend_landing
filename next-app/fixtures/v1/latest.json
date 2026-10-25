@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-25T21:04:00Z",
+  "editionDate": "2026-10-26",
+  "editions": {
+    "performance": "editions/2026-10-26/performance.json",
+    "ua": "editions/2026-10-26/ua.json",
+    "brand": "editions/2026-10-26/brand.json"
+  },
+  "feeds": {
+    "news": "feed/news.json",
+    "platform": "feed/platform.json",
+    "expert": "feed/expert.json",
+    "creative": "feed/creative.json"
+  },
+  "pulse": "pulse/latest.json",
+  "sources": [
+    {
+      "name": "AdExchanger",
+      "section": "news",
+      "url": "https://www.adexchanger.com/"
+    },
+    {
+      "name": "Digiday",
+      "section": "news",
+      "url": "https://digiday.com/"
+    },
+    {
+      "name": "Meta for Business",
+      "section": "platform",
+      "url": "https://www.facebook.com/business/news"
+    },
+    {
+      "name": "SparkToro",
+      "section": "expert",
+      "url": "https://sparktoro.com/blog/"
+    }
+  ]
+}

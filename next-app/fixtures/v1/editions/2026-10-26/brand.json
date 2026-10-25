@@ -1,0 +1,203 @@
+{
+  "version": 1,
+  "date": "2026-10-26",
+  "role": "brand",
+  "generatedAt": "2026-10-25T21:04:00Z",
+  "headline": "Retail media and CTV keep pulling brand budgets, and Google now expects vertical video by default.",
+  "items": [
+    {
+      "id": "2c325bd8d30a",
+      "section": "news",
+      "title": "Fixture: Retail media budgets keep growing as CPMs on the open web slide",
+      "url": "https://example.com/fixture/a0ae53837b39",
+      "source": "AdExchanger",
+      "publishedAt": "2026-10-25T13:30:00Z",
+      "summary": "Agency planners say retail media now takes a larger share of incremental budgets, while open-web CPMs fell for a third straight quarter.",
+      "platforms": [
+        "amazon",
+        "other"
+      ],
+      "tags": [
+        "retail media",
+        "budgets"
+      ],
+      "importance": 4,
+      "roles": {
+        "performance": {
+          "relevance": 2,
+          "soWhat": "Expect cheaper open-web inventory; test prospecting there while CPMs stay soft."
+        },
+        "ua": {
+          "relevance": 1,
+          "soWhat": "Retail media rarely drives installs; keep it out of your UA plan for now."
+        },
+        "brand": {
+          "relevance": 3,
+          "soWhat": "Retail networks are now a brand channel; ask for reach and frequency, not just ROAS."
+        }
+      },
+      "enriched": true
+    },
+    {
+      "id": "9870abacaee3",
+      "section": "expert",
+      "title": "Fixture: The case for fewer, bigger creative bets",
+      "url": "https://example.com/fixture/a8ffa6487846",
+      "source": "Seth Godin",
+      "publishedAt": "2026-10-24T22:00:00Z",
+      "summary": "A short essay arguing that teams spreading budget across dozens of small creative tests learn less than teams that commit to a few distinct ideas.",
+      "platforms": [
+        "other"
+      ],
+      "tags": [
+        "creative",
+        "strategy"
+      ],
+      "importance": 2,
+      "roles": {
+        "performance": {
+          "relevance": 1,
+          "soWhat": "Group creative tests by concept, not by small variations, so results are readable."
+        },
+        "ua": {
+          "relevance": 1,
+          "soWhat": "Fewer concepts with more variations each may beat many one-off ads in app stores."
+        },
+        "brand": {
+          "relevance": 3,
+          "soWhat": "Pick two distinct concepts for next quarter and fund them properly instead of ten small tests."
+        }
+      },
+      "enriched": true
+    },
+    {
+      "id": "082dde7625c5",
+      "section": "platform",
+      "title": "Fixture: Google Ads makes Demand Gen video placements default for new campaigns",
+      "url": "https://example.com/fixture/4ce237c498aa",
+      "source": "Google Ads & Commerce Blog",
+      "publishedAt": "2026-10-25T09:00:00Z",
+      "summary": "New Demand Gen campaigns will include YouTube Shorts and in-stream placements by default, with an opt-out per channel at the ad group level.",
+      "platforms": [
+        "google",
+        "youtube"
+      ],
+      "tags": [
+        "demand gen",
+        "video"
+      ],
+      "importance": 4,
+      "roles": {
+        "performance": {
+          "relevance": 3,
+          "soWhat": "Check new Demand Gen campaigns for video spend you did not plan for; add exclusions if needed."
+        },
+        "ua": {
+          "relevance": 2,
+          "soWhat": "Shorts inventory can be cheap reach for app campaigns; give it a separate budget test."
+        },
+        "brand": {
+          "relevance": 3,
+          "soWhat": "You now need vertical video for every Demand Gen launch; brief the creative team."
+        }
+      },
+      "enriched": true
+    },
+    {
+      "id": "6d0592974dfa",
+      "section": "news",
+      "title": "Fixture: Connected TV ad spend passes linear for the first time in one US market study",
+      "url": "https://example.com/fixture/55e8aa533922",
+      "source": "Digiday",
+      "publishedAt": "2026-10-24T18:15:00Z",
+      "summary": "A US market study reports connected TV now outspends linear TV for the brands it tracks, driven by streaming ad tiers and programmatic buying.",
+      "platforms": [
+        "other"
+      ],
+      "tags": [
+        "ctv",
+        "video"
+      ],
+      "importance": 3,
+      "roles": {
+        "performance": {
+          "relevance": 2,
+          "soWhat": "CTV is becoming measurable enough to test with conversion goals; start with a small pilot."
+        },
+        "ua": {
+          "relevance": 1,
+          "soWhat": "CTV can work for app awareness, but install attribution is still weak."
+        },
+        "brand": {
+          "relevance": 3,
+          "soWhat": "Plan TV and streaming as one video budget and compare reach across both."
+        }
+      },
+      "enriched": true
+    },
+    {
+      "id": "254f48c96156",
+      "section": "platform",
+      "title": "Fixture: Meta adds incrementality reporting to Ads Manager for all advertisers",
+      "url": "https://example.com/fixture/4f7c80cd02a9",
+      "source": "Meta for Business",
+      "publishedAt": "2026-10-25T16:10:00Z",
+      "summary": "Meta is rolling out a built-in conversion lift view in Ads Manager, so advertisers can see estimated incremental conversions next to attributed results without a separate study.",
+      "platforms": [
+        "meta"
+      ],
+      "tags": [
+        "measurement",
+        "incrementality"
+      ],
+      "importance": 5,
+      "roles": {
+        "performance": {
+          "relevance": 3,
+          "soWhat": "Compare attributed vs incremental CPA on your top campaigns this week before you shift budget."
+        },
+        "ua": {
+          "relevance": 2,
+          "soWhat": "Use lift results to sanity-check app install campaigns that look strong on last-click."
+        },
+        "brand": {
+          "relevance": 1,
+          "soWhat": "Useful proof for upper-funnel spend when finance asks what brand campaigns really drive."
+        }
+      },
+      "enriched": true
+    },
+    {
+      "id": "09ea77166c6c",
+      "section": "expert",
+      "title": "Fixture: Why your attribution model is quietly overpaying for retargeting",
+      "url": "https://example.com/fixture/ef900fbe085a",
+      "source": "SparkToro",
+      "publishedAt": "2026-10-25T11:45:00Z",
+      "summary": "An argument that view-through and short-window retargeting take credit for conversions that would have happened anyway, with a simple holdout test to check.",
+      "platforms": [
+        "other"
+      ],
+      "tags": [
+        "attribution",
+        "retargeting"
+      ],
+      "importance": 3,
+      "roles": {
+        "performance": {
+          "relevance": 3,
+          "soWhat": "Run a 10% retargeting holdout for two weeks; cut spend if the gap is small."
+        },
+        "ua": {
+          "relevance": 2,
+          "soWhat": "Re-engagement campaigns have the same problem; holdouts apply to apps too."
+        },
+        "brand": {
+          "relevance": 1,
+          "soWhat": "A reminder to judge brand work on reach and recall, not last-touch credit."
+        }
+      },
+      "enriched": true
+    }
+  ]
+}
