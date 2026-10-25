@@ -1,40 +1,44 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useLanguage } from '@/hooks/useLanguage';
+import { CONTACT_EMAIL, TERMS_URL } from '@/lib/site';
+
+const linkClass = 'text-sm text-subtle transition-colors hover:text-signal-text';
 
 export default function Footer() {
   const { t } = useLanguage();
 
   return (
-    <footer className="text-center py-10 border-t border-[var(--color-border)] mt-10">
-      <p className="text-[var(--color-muted-dark)] text-sm mb-4">
-        &copy; 2025 TAT (Today Ad Trend). All rights reserved.
-      </p>
-      <div className="flex gap-6 justify-center flex-wrap">
-        <Link
-          href="/guide"
-          className="text-[var(--color-muted)] no-underline text-sm transition-colors hover:text-[var(--color-accent-green)]"
-        >
-          {t('footer.userGuide')}
-        </Link>
-        <a
-          href="https://brave-lifter-325.notion.site/Privacy-Policy-for-TAT-Today-Ad-Trend-2d8662e222b880f4be19c5d43d33de85"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[var(--color-muted)] no-underline text-sm transition-colors hover:text-[var(--color-accent-green)]"
-        >
-          {t('footer.privacyPolicy')}
-        </a>
-        <a
-          href="https://brave-lifter-325.notion.site/Terms-of-Service-for-TAT-Today-Ad-Trend-2d8662e222b880b098b6f8e5e4278f6d"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[var(--color-muted)] no-underline text-sm transition-colors hover:text-[var(--color-accent-green)]"
-        >
-          {t('footer.termsOfService')}
-        </a>
+    <footer className="mt-16 border-t border-line pt-10 pb-6">
+      <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+        <div className="max-w-sm">
+          <Link href="/" className="flex items-center gap-2.5 text-fg">
+            <Image src="/mark.svg" alt="" width={28} height={28} className="rounded-md" unoptimized />
+            <span className="font-bold">Today Ad Trend</span>
+          </Link>
+          <p className="mt-3 text-sm leading-relaxed text-subtle">{t('footer.tagline')}</p>
+        </div>
+
+        <nav aria-label="Footer" className="grid grid-cols-2 gap-x-10 gap-y-3 sm:grid-cols-3">
+          <Link href="/brief" className={linkClass}>{t('nav.brief')}</Link>
+          <Link href="/pulse" className={linkClass}>{t('nav.pulse')}</Link>
+          <Link href="/guide" className={linkClass}>{t('footer.userGuide')}</Link>
+          <Link href="/blog" className={linkClass}>{t('nav.blog')}</Link>
+          <Link href="/privacy" className={linkClass}>{t('footer.privacyPolicy')}</Link>
+          <a href={TERMS_URL} target="_blank" rel="noopener noreferrer" className={linkClass}>
+            {t('footer.termsOfService')}
+          </a>
+          <a href={`mailto:${CONTACT_EMAIL}`} className={linkClass}>
+            {t('footer.contact')}
+          </a>
+        </nav>
       </div>
+
+      <p className="mt-10 text-xs text-faint">
+        &copy; 2026 Today Ad Trend (TAT). {t('footer.rights')}
+      </p>
     </footer>
   );
 }

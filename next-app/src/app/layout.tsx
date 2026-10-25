@@ -1,45 +1,40 @@
-import type { Metadata } from "next";
-import { Analytics } from "@vercel/analytics/next";
-import "./globals.css";
-import ClientLayout from "./ClientLayout";
+import type { Metadata, Viewport } from 'next';
+import { Analytics } from '@vercel/analytics/next';
+import './globals.css';
+import ClientLayout from './ClientLayout';
+import { POSITIONING, SEO_KEYWORDS, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/site';
+
+const DEFAULT_TITLE = `${SITE_NAME}: Daily ad briefing for marketers`;
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://todayadtrend.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "TAT - Today Ad Trend | Mobile Advertising Insights",
-    template: "%s | TAT",
+    default: DEFAULT_TITLE,
+    template: `%s | ${SITE_NAME}`,
   },
-  description: "Daily mobile advertising trends, news, and insights. Stay updated with AdTech, MarTech, and monetization strategies for app developers and marketers.",
-  keywords: ["mobile advertising", "ad tech", "martech", "app monetization", "eCPM", "rewarded ads", "mobile marketing", "ad trends"],
-  authors: [{ name: "TAT - Today Ad Trend" }],
-  creator: "TAT",
-  publisher: "TAT - Today Ad Trend",
+  description: `${POSITIONING} ${SITE_DESCRIPTION}`,
+  keywords: SEO_KEYWORDS,
+  applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: [{ url: '/mark.svg', type: 'image/svg+xml' }],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
   openGraph: {
-    type: "website",
-    locale: "en_US",
-    alternateLocale: "ko_KR",
-    url: "https://todayadtrend.com",
-    siteName: "TAT - Today Ad Trend",
-    title: "TAT - Today Ad Trend | Mobile Advertising Insights",
-    description: "Daily mobile advertising trends, news, and insights for app developers and marketers.",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "TAT - Today Ad Trend",
-      },
-    ],
+    type: 'website',
+    locale: 'en_US',
+    alternateLocale: 'ko_KR',
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: DEFAULT_TITLE,
+    description: POSITIONING,
   },
   twitter: {
-    card: "summary_large_image",
-    title: "TAT - Today Ad Trend",
-    description: "Daily mobile advertising trends, news, and insights.",
-    images: ["/og-image.png"],
+    card: 'summary_large_image',
+    title: DEFAULT_TITLE,
+    description: POSITIONING,
   },
   robots: {
     index: true,
@@ -47,17 +42,19 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
     },
   },
-  verification: {
-    google: "your-google-verification-code", // Google Search Console에서 발급
-  },
   other: {
-    "google-adsense-account": "ca-pub-8143178103770527",
+    'google-adsense-account': 'ca-pub-8143178103770527',
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#0B1B2B',
+  colorScheme: 'dark',
 };
 
 export default function RootLayout({
