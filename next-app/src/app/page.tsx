@@ -53,7 +53,7 @@ export default async function Home() {
         applicationCategory: 'NewsApplication',
         description: SITE_DESCRIPTION,
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-        sameAs: [APP_STORE_URL, PLAY_STORE_URL],
+        sameAs: [APP_STORE_URL, PLAY_STORE_URL].filter((u): u is string => u !== null),
       },
     ],
   };

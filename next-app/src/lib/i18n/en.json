@@ -10,7 +10,8 @@
   },
   "store": {
     "appStorePre": "Download on the",
-    "playPre": "Get it on"
+    "playPre": "Get it on",
+    "comingSoon": "Coming soon to"
   },
   "home": {
     "eyebrow": "Daily ad briefing for marketers",

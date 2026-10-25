@@ -9,10 +9,11 @@ export const SITE_DESCRIPTION =
   'A 3-minute daily ad briefing for performance, UA and brand marketers: the ad industry news, platform updates and expert takes that matter, each with a "so what" for your role.';
 export const CONTACT_EMAIL = 'soen234@gmail.com';
 
-// TODO(app-id): replace with the real App Store URL after store submission.
-export const APP_STORE_URL = 'https://apps.apple.com/app/id0000000000';
-// TODO(app-id): replace with the real Google Play URL after store submission.
-export const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.elehedge.tat';
+// Set these once the app is live. While null, the buttons render as "Coming soon" instead of a broken link.
+// App Store: https://apps.apple.com/app/id<apple-id> (App Store Connect → App Information → Apple ID)
+export const APP_STORE_URL: string | null = null;
+// Google Play: https://play.google.com/store/apps/details?id=com.elehedge.tat
+export const PLAY_STORE_URL: string | null = null;
 
 export const TERMS_URL =
   'https://brave-lifter-325.notion.site/Terms-of-Service-for-TAT-Today-Ad-Trend-2d8662e222b880b098b6f8e5e4278f6d';

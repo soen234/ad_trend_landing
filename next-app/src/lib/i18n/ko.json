@@ -10,7 +10,8 @@
   },
   "store": {
     "appStorePre": "다운로드",
-    "playPre": "다운로드"
+    "playPre": "다운로드",
+    "comingSoon": "출시 예정"
   },
   "home": {
     "eyebrow": "마케터를 위한 데일리 광고 브리핑",

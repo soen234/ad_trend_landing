@@ -62,8 +62,6 @@ export default async function PulsePage() {
   }
 
   const { sample } = pulse;
-  const change =
-    sample.newPriorWeek > 0 ? Math.round(((sample.newThisWeek - sample.newPriorWeek) / sample.newPriorWeek) * 100) : null;
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -73,8 +71,8 @@ export default async function PulsePage() {
         Estimated from a random sample of {formatCount(sample.creatives)} creatives in the Google Ads Transparency
         Center (EEA and Turkey).
         <span className="mt-1 block text-sm text-subtle">
+          {/* 최근 주는 데이터가 늦게 채워지므로 총량 증감은 보여주지 않는다 (비중 비교만 의미 있음) */}
           {formatCount(sample.newThisWeek)} were first shown this week
-          {change !== null && ` (${change >= 0 ? '+' : '−'}${Math.abs(change)}% vs the prior week)`}
           {sample.totalShards > 0 && ` · ${sample.shards} of ${sample.totalShards} data shards sampled`}.
         </span>
       </p>
