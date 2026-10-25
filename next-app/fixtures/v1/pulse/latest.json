@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-20T21:30:00Z",
+  "weekStart": "2026-10-13",
+  "weekEnd": "2026-10-19",
+  "sample": {
+    "shards": 24,
+    "totalShards": 400,
+    "creatives": 18432,
+    "newThisWeek": 3120,
+    "newPriorWeek": 2874
+  },
+  "formatMix": [
+    {
+      "label": "IMAGE",
+      "share": 0.46,
+      "deltaPt": -2.1
+    },
+    {
+      "label": "VIDEO",
+      "share": 0.33,
+      "deltaPt": 3.4
+    },
+    {
+      "label": "TEXT",
+      "share": 0.21,
+      "deltaPt": -1.3
+    }
+  ],
+  "audienceSignals": [
+    {
+      "label": "Demographic targeting",
+      "share": 0.38,
+      "deltaPt": 1.2
+    },
+    {
+      "label": "Location targeting",
+      "share": 0.71,
+      "deltaPt": 0.4
+    },
+    {
+      "label": "Contextual signals",
+      "share": 0.29,
+      "deltaPt": -0.8
+    },
+    {
+      "label": "Customer lists",
+      "share": 0.12,
+      "deltaPt": 0.6
+    }
+  ],
+  "topLaunchers": [
+    {
+      "advertiser": "Fixture Advertiser A",
+      "newCreatives": 214,
+      "exampleUrl": "https://adstransparency.google.com/advertiser/AR00000000000000000001?region=anywhere"
+    },
+    {
+      "advertiser": "Fixture Advertiser B",
+      "newCreatives": 167,
+      "exampleUrl": "https://adstransparency.google.com/advertiser/AR00000000000000000002?region=anywhere"
+    },
+    {
+      "advertiser": "Fixture Advertiser C",
+      "newCreatives": 98,
+      "exampleUrl": "https://adstransparency.google.com/advertiser/AR00000000000000000003?region=anywhere"
+    },
+    {
+      "advertiser": "Fixture Advertiser Unsafe",
+      "newCreatives": 12,
+      "exampleUrl": "javascript:alert(1)"
+    }
+  ],
+  "longRunners": [
+    {
+      "advertiser": "Fixture Advertiser D",
+      "format": "VIDEO",
+      "firstShown": "2024-03-02",
+      "url": "https://adstransparency.google.com/advertiser/AR00000000000000000004/creative/CR00000000000000000001?region=anywhere"
+    },
+    {
+      "advertiser": "Fixture Advertiser E",
+      "format": "IMAGE",
+      "firstShown": "2025-01-15",
+      "url": "https://adstransparency.google.com/advertiser/AR00000000000000000005/creative/CR00000000000000000002?region=anywhere"
+    }
+  ],
+  "insights": [
+    "Video made up a third of new creatives this week, up 3.4 points, while image ads lost share.",
+    "New creative volume rose about 9% week over week in the sampled shards.",
+    "Most new ads still use location targeting; customer-list targeting remains rare at 12%."
+  ]
+}

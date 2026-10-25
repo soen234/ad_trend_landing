@@ -1,26 +1,42 @@
 @import "tailwindcss";
 
 /* =============================================================================
-   BASE LAYER - Element defaults
+   TOKENS
+   Brand palette: ink #0B1B2B, signal green #12B76A (primary), sky #2E90FA (platform),
+   amber #F79009 ("so what"), violet #7A5AF8 (experts), rose #EE46BC (creative).
+   The site is dark only. "*-text" tints are the readable versions of each accent on ink
+   (all >= 4.5:1 against the background).
    ============================================================================= */
 @layer base {
   :root {
-    /* Colors */
-    --color-background: #0a1929;
-    --color-background-secondary: #1a2744;
-    --color-foreground: #ffffff;
-    --color-muted: #94a3b8;
-    --color-muted-dark: #64748b;
-    --color-accent-green: #4ade80;
-    --color-accent-cyan: #22d3ee;
-    --color-card: rgba(255, 255, 255, 0.05);
-    --color-card-hover: rgba(255, 255, 255, 0.08);
-    --color-border: rgba(255, 255, 255, 0.15);
+    color-scheme: dark;
 
-    /* Typography */
-    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --color-background: #0b1b2b;
+    --color-background-secondary: #0a1724;
+    --color-foreground: #f2f6f9;
+    --color-muted: #a9b8c6;
+    --color-muted-dark: #8c9dae;
+    --color-card: rgba(255, 255, 255, 0.04);
+    --color-card-hover: rgba(255, 255, 255, 0.07);
+    --color-border: rgba(255, 255, 255, 0.12);
+    --color-accent-green: #12b76a;
+    --color-accent-cyan: #53b1fd;
 
-    /* Spacing */
+    --brand-signal: #12b76a;
+    --brand-signal-text: #32d583;
+    --brand-sky: #2e90fa;
+    --brand-sky-text: #53b1fd;
+    --brand-amber: #f79009;
+    --brand-amber-text: #fdb022;
+    --brand-violet: #7a5af8;
+    --brand-violet-text: #a48afb;
+    --brand-rose: #ee46bc;
+    --brand-rose-text: #f670c7;
+
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+      'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+
+    /* Spacing & radius (legacy, used by older components) */
     --space-xs: 4px;
     --space-sm: 8px;
     --space-md: 16px;
@@ -28,8 +44,6 @@
     --space-xl: 24px;
     --space-2xl: 32px;
     --space-3xl: 48px;
-
-    /* Border Radius */
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 16px;
@@ -42,259 +56,163 @@
     box-sizing: border-box;
   }
 
-  html, body {
+  html,
+  body {
     width: 100%;
+    overflow-x: clip;
   }
 
   body {
     font-family: var(--font-sans);
-    background: linear-gradient(135deg, var(--color-background) 0%, var(--color-background-secondary) 100%);
+    background-color: var(--color-background);
+    background-image: linear-gradient(180deg, var(--color-background) 0%, var(--color-background-secondary) 100%);
     min-height: 100vh;
     color: var(--color-foreground);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
-  main {
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
+  a {
+    color: inherit;
+    text-decoration: none;
   }
 
-  nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    padding: 0 var(--space-lg);
-  }
-
-  nav > div:first-child {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 60px;
-  }
-
-  section {
-    text-align: center;
-  }
-
-  footer {
-    text-align: center;
-    padding: 40px 0;
-    border-top: 1px solid var(--color-border);
-    margin-top: 40px;
+  :focus-visible {
+    outline: 2px solid var(--brand-signal-text);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }
 
+/* Tailwind utilities that read the tokens above (bg-panel, text-subtle, border-line, ...). */
+@theme inline {
+  --color-ink: var(--color-background);
+  --color-fg: var(--color-foreground);
+  --color-subtle: var(--color-muted);
+  --color-faint: var(--color-muted-dark);
+  --color-panel: var(--color-card);
+  --color-panel-hover: var(--color-card-hover);
+  --color-line: var(--color-border);
+  --color-signal: var(--brand-signal);
+  --color-signal-text: var(--brand-signal-text);
+  --color-sky: var(--brand-sky);
+  --color-sky-text: var(--brand-sky-text);
+  --color-amber: var(--brand-amber);
+  --color-amber-text: var(--brand-amber-text);
+  --color-violet: var(--brand-violet);
+  --color-violet-text: var(--brand-violet-text);
+  --color-rose: var(--brand-rose);
+  --color-rose-text: var(--brand-rose-text);
+}
+
 /* =============================================================================
-   COMPONENTS LAYER - Design System Components
+   COMPONENTS
    ============================================================================= */
 @layer components {
-  /* ---------------------------------------------------------------------------
-     Text Styles
-     --------------------------------------------------------------------------- */
   .gradient-text {
-    background: linear-gradient(135deg, var(--color-accent-green) 0%, var(--color-accent-cyan) 100%);
+    background: linear-gradient(135deg, var(--brand-signal-text) 0%, var(--brand-sky-text) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  /* ---------------------------------------------------------------------------
-     Effects
-     --------------------------------------------------------------------------- */
   .glass {
-    background: rgba(10, 25, 41, 0.95);
+    background: rgba(11, 27, 43, 0.92);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
 
-  /* ---------------------------------------------------------------------------
-     Cards - Base
-     --------------------------------------------------------------------------- */
   .card {
     background: var(--color-card);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     padding: var(--space-xl);
-    transition: transform 0.2s, background 0.2s;
+    transition: background 0.2s, border-color 0.2s;
   }
 
   .card:hover {
-    transform: translateY(-4px);
     background: var(--color-card-hover);
   }
 
-  /* ---------------------------------------------------------------------------
-     Cards - News
-     --------------------------------------------------------------------------- */
-  .news-card {
-    background: var(--color-card);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-lg);
-    transition: border-color 0.2s;
-    text-align: left;
+  /* Section tones: set --tone / --tone-bg, then use .tone-badge or var(--tone). */
+  .tone-news {
+    --tone: var(--brand-signal-text);
+    --tone-bg: rgba(18, 183, 106, 0.14);
+  }
+  .tone-platform {
+    --tone: var(--brand-sky-text);
+    --tone-bg: rgba(46, 144, 250, 0.16);
+  }
+  .tone-expert {
+    --tone: var(--brand-violet-text);
+    --tone-bg: rgba(122, 90, 248, 0.18);
+  }
+  .tone-creative {
+    --tone: var(--brand-rose-text);
+    --tone-bg: rgba(238, 70, 188, 0.16);
+  }
+  .tone-amber {
+    --tone: var(--brand-amber-text);
+    --tone-bg: rgba(247, 144, 9, 0.14);
   }
 
-  .news-card:hover {
-    border-color: var(--color-accent-green);
-  }
-
-  .news-card-lg {
-    background: var(--color-card);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-lg);
-    transition: border-color 0.2s;
-    text-align: left;
-  }
-
-  .news-card-lg:hover {
-    border-color: var(--color-accent-green);
-  }
-
-  .news-meta {
-    display: flex;
-    gap: var(--space-sm);
+  .tone-badge {
+    display: inline-flex;
     align-items: center;
-    margin-bottom: var(--space-sm);
-    flex-wrap: wrap;
-  }
-
-  .news-card h3,
-  .news-card h2,
-  .news-card-lg h3,
-  .news-card-lg h2 {
-    font-size: 16px;
+    gap: 6px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 12px;
     font-weight: 600;
-    margin-bottom: var(--space-sm);
     line-height: 1.4;
+    color: var(--tone);
+    background: var(--tone-bg);
   }
 
-  .news-card h3 a,
-  .news-card h2 a,
-  .news-card-lg h3 a,
-  .news-card-lg h2 a {
-    color: #fff;
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-
-  .news-card h3 a:hover,
-  .news-card h2 a:hover,
-  .news-card-lg h3 a:hover,
-  .news-card-lg h2 a:hover {
-    color: var(--color-accent-green);
-  }
-
-  .news-card p,
-  .news-card-lg p {
-    font-size: 14px;
-    color: var(--color-muted);
-    line-height: 1.5;
-  }
-
-  .news-grid {
-    display: grid;
-    gap: var(--space-lg);
-  }
-
-  .news-section {
-    margin: 60px 0;
-  }
-
-  .news-section h2 {
-    text-align: center;
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: var(--space-2xl);
-  }
-
-  /* ---------------------------------------------------------------------------
-     Cards - Feature
-     --------------------------------------------------------------------------- */
-  .feature-card {
-    background: var(--color-card);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-2xl);
-    text-align: center;
-    transition: transform 0.2s, background 0.2s;
-  }
-
-  .feature-card:hover {
-    transform: translateY(-4px);
-    background: var(--color-card-hover);
-  }
-
-  .feature-icon {
-    width: 56px;
-    height: 56px;
-    background: linear-gradient(135deg, var(--color-accent-green) 0%, var(--color-accent-cyan) 100%);
-    border-radius: 14px;
-    display: flex;
+  .tone-icon {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto var(--space-md);
-    font-size: 28px;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    color: var(--tone);
+    background: var(--tone-bg);
+    flex-shrink: 0;
   }
 
-  .feature-card h3 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: var(--space-sm);
+  /* The amber "so what" callout */
+  .so-what {
+    border-left: 3px solid var(--brand-amber);
+    background: rgba(247, 144, 9, 0.08);
+    border-radius: 0 10px 10px 0;
+    padding: 10px 14px;
   }
 
-  .feature-card p {
-    font-size: 14px;
-    color: var(--color-muted);
-    line-height: 1.5;
-  }
-
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: var(--space-xl);
-  }
-
-  /* ---------------------------------------------------------------------------
-     Badges
-     --------------------------------------------------------------------------- */
-  .category-badge {
-    padding: var(--space-xs) 10px;
-    border-radius: var(--space-xs);
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-  }
-
-  .news-date {
+  .so-what-label {
+    color: var(--brand-amber-text);
     font-size: 12px;
-    color: var(--color-muted-dark);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
   }
 
-  /* ---------------------------------------------------------------------------
-     Buttons
-     --------------------------------------------------------------------------- */
   .btn-primary {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: var(--space-sm);
-    padding: 14px 28px;
-    background: #fff;
+    padding: 12px 20px;
+    background: var(--brand-signal);
     color: var(--color-background);
-    text-decoration: none;
     border-radius: var(--radius-md);
-    font-weight: 600;
-    transition: transform 0.2s, box-shadow 0.2s;
+    font-weight: 700;
+    transition: background 0.2s, transform 0.2s;
   }
 
   .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+    background: var(--brand-signal-text);
   }
 
   .btn-gradient {
@@ -302,162 +220,18 @@
     align-items: center;
     gap: var(--space-sm);
     padding: var(--space-sm) var(--space-xl);
-    background: linear-gradient(135deg, var(--color-accent-green) 0%, var(--color-accent-cyan) 100%);
+    background: var(--brand-signal);
     color: var(--color-background);
-    text-decoration: none;
     border-radius: var(--radius-sm);
     font-weight: 600;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: background 0.2s;
   }
 
   .btn-gradient:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(74, 222, 128, 0.3);
+    background: var(--brand-signal-text);
   }
 
-  .filter-btn {
-    padding: var(--space-sm) var(--space-md);
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-    background: var(--color-card);
-    color: var(--color-muted);
-  }
-
-  .filter-btn:hover {
-    background: var(--color-card-hover);
-  }
-
-  .filter-btn.active {
-    background: var(--color-accent-green);
-    color: var(--color-background);
-  }
-
-  /* ---------------------------------------------------------------------------
-     Links
-     --------------------------------------------------------------------------- */
-  .view-all-link {
-    display: block;
-    text-align: center;
-    margin-top: var(--space-xl);
-    color: var(--color-accent-green);
-    text-decoration: none;
-    font-weight: 500;
-  }
-
-  .view-all-link:hover {
-    text-decoration: underline;
-  }
-
-  /* ---------------------------------------------------------------------------
-     Page Sections
-     --------------------------------------------------------------------------- */
-  .page-header {
-    text-align: center;
-    margin-bottom: var(--space-3xl);
-  }
-
-  .page-header h1 {
-    font-size: 36px;
-    font-weight: 700;
-    margin-bottom: var(--space-sm);
-  }
-
-  .page-header p {
-    font-size: 16px;
-    color: var(--color-muted);
-  }
-
-  .category-filter {
-    display: flex;
-    gap: var(--space-sm);
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: var(--space-2xl);
-  }
-
-  /* ---------------------------------------------------------------------------
-     Hero Section
-     --------------------------------------------------------------------------- */
-  .hero {
-    text-align: center;
-    padding: 60px 0;
-  }
-
-  .hero h1 {
-    font-size: 48px;
-    font-weight: 700;
-    margin-bottom: var(--space-sm);
-  }
-
-  .hero-tagline {
-    font-size: 20px;
-    color: var(--color-muted);
-    margin-bottom: var(--space-2xl);
-  }
-
-  .hero-buttons {
-    display: flex;
-    gap: var(--space-md);
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .hero-guide-link {
-    display: inline-block;
-    margin-top: var(--space-xl);
-    color: var(--color-accent-green);
-    text-decoration: none;
-    font-size: 14px;
-  }
-
-  .hero-guide-link:hover {
-    text-decoration: underline;
-  }
-
-  .app-icon {
-    width: 120px;
-    height: 120px;
-    border-radius: var(--radius-2xl);
-    margin: 0 auto var(--space-xl);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    overflow: hidden;
-  }
-
-  .app-icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  /* ---------------------------------------------------------------------------
-     Support Section
-     --------------------------------------------------------------------------- */
-  .support {
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: var(--radius-xl);
-    padding: var(--space-3xl);
-    margin: 40px 0;
-    text-align: center;
-  }
-
-  .support h2 {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: var(--space-md);
-  }
-
-  .support p {
-    color: var(--color-muted);
-    margin-bottom: var(--space-xl);
-  }
-
-  /* ---------------------------------------------------------------------------
-     Ads
-     --------------------------------------------------------------------------- */
+  /* Ads */
   .ad-container {
     background: var(--color-card);
     border: 1px solid var(--color-border);
@@ -466,6 +240,17 @@
     margin: var(--space-2xl) 0;
     text-align: center;
     min-height: 100px;
+    overflow: hidden;
+  }
+
+  /* Collapse slots AdSense could not fill instead of showing an empty box. */
+  ins.adsbygoogle[data-ad-status='unfilled'] {
+    display: none !important;
+  }
+
+  .ad-container:has(ins.adsbygoogle[data-ad-status='unfilled']),
+  .ad-anchor:has(ins.adsbygoogle[data-ad-status='unfilled']) {
+    display: none;
   }
 
   .ad-label {

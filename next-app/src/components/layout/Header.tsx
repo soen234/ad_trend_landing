@@ -6,109 +6,126 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/hooks/useLanguage';
 
+const NAV_ITEMS = [
+  { href: '/brief', key: 'nav.brief' },
+  { href: '/pulse', key: 'nav.pulse' },
+  { href: '/guide', key: 'nav.guide' },
+  { href: '/blog', key: 'nav.blog' },
+];
+
+function isActive(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export default function Header() {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? '/';
   const { lang, setLang, t } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const navItems = [
-    { href: '/', key: 'nav.home' },
-    { href: '/guide', key: 'nav.guide' },
-    { href: '/blog', key: 'nav.blog' },
-    { href: '/news', key: 'nav.news' },
-  ];
+  const langButton = (code: 'ko' | 'en', label: string) => (
+    <button
+      type="button"
+      onClick={() => setLang(code)}
+      aria-pressed={lang === code}
+      className={`px-2.5 py-1.5 rounded-md text-xs font-semibold cursor-pointer transition-colors ${
+        lang === code ? 'bg-signal/25 text-fg' : 'bg-white/5 text-subtle hover:bg-white/10 hover:text-fg'
+      }`}
+    >
+      {label}
+    </button>
+  );
 
   return (
-    <nav className="fixed top-0 left-0 right-0 glass border-b border-[var(--color-border)] z-[1000] px-5">
-      <div className="max-w-[1200px] mx-auto flex items-center justify-between h-[60px]">
-        <Link href="/" className="flex items-center gap-2.5 no-underline text-white">
-          <Image
-            src="/logo.png"
-            alt="TAT"
-            width={36}
-            height={36}
-            className="rounded-lg"
-          />
-          <span className="font-bold text-lg gradient-text hidden sm:inline">Today Ad Trend</span>
-          <span className="font-bold text-lg gradient-text sm:hidden">TAT</span>
+    <header className="fixed top-0 left-0 right-0 z-[1000] glass border-b border-line">
+      <div className="mx-auto flex h-[60px] max-w-[1120px] items-center justify-between gap-3 px-4 sm:px-6">
+        <Link href="/" className="flex items-center gap-2.5 text-fg" onClick={() => setIsMenuOpen(false)}>
+          <Image src="/mark.svg" alt="" width={32} height={32} className="rounded-lg" unoptimized priority />
+          <span className="font-bold text-[17px] tracking-tight">
+            <span className="hidden sm:inline">Today Ad Trend</span>
+            <span className="sm:hidden">TAT</span>
+          </span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex gap-8">
-          {navItems.map((item) => (
+        {/* Desktop navigation */}
+        <nav aria-label="Main" className="hidden md:flex items-center gap-7">
+          {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`text-sm font-medium no-underline transition-colors duration-200 ${
-                pathname === item.href
-                  ? 'text-[var(--color-accent-green)]'
-                  : 'text-[var(--color-muted)] hover:text-[var(--color-accent-green)]'
+              aria-current={isActive(pathname, item.href) ? 'page' : undefined}
+              className={`text-sm font-medium transition-colors ${
+                isActive(pathname, item.href) ? 'text-signal-text' : 'text-subtle hover:text-fg'
               }`}
             >
               {t(item.key)}
             </Link>
           ))}
-        </div>
+        </nav>
 
-        <div className="flex items-center gap-3">
-          {/* Language Switcher */}
-          <div className="flex gap-2">
-            <button
-              onClick={() => setLang('ko')}
-              className={`px-3 py-1.5 border-none rounded-md text-white cursor-pointer text-xs transition-colors ${
-                lang === 'ko'
-                  ? 'bg-[rgba(74,222,128,0.3)]'
-                  : 'bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(74,222,128,0.3)]'
-              }`}
-            >
-              KO
-            </button>
-            <button
-              onClick={() => setLang('en')}
-              className={`px-3 py-1.5 border-none rounded-md text-white cursor-pointer text-xs transition-colors ${
-                lang === 'en'
-                  ? 'bg-[rgba(74,222,128,0.3)]'
-                  : 'bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(74,222,128,0.3)]'
-              }`}
-            >
-              EN
-            </button>
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1" role="group" aria-label="Language">
+            {langButton('ko', 'KO')}
+            {langButton('en', 'EN')}
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden flex flex-col justify-center items-center w-8 h-8 bg-transparent border-none cursor-pointer gap-1.5"
-            aria-label="Toggle menu"
+          <Link
+            href="/#download"
+            className="hidden md:inline-flex items-center rounded-lg bg-signal px-3.5 py-2 text-sm font-bold text-ink transition-colors hover:bg-signal-text"
           >
-            <span className={`block w-5 h-0.5 bg-white transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-            <span className={`block w-5 h-0.5 bg-white transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`} />
-            <span className={`block w-5 h-0.5 bg-white transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+            {t('nav.getApp')}
+          </Link>
+
+          {/* Mobile menu button */}
+          <button
+            type="button"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden flex h-10 w-10 flex-col items-center justify-center gap-1.5 bg-transparent cursor-pointer"
+            aria-label={t('nav.menu')}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
+          >
+            <span className={`block h-0.5 w-5 bg-fg transition-all duration-300 ${isMenuOpen ? 'translate-y-2 rotate-45' : ''}`} />
+            <span className={`block h-0.5 w-5 bg-fg transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`} />
+            <span className={`block h-0.5 w-5 bg-fg transition-all duration-300 ${isMenuOpen ? '-translate-y-2 -rotate-45' : ''}`} />
           </button>
         </div>
       </div>
 
-      {/* Mobile Navigation Menu */}
-      <div className={`md:hidden grid transition-all duration-300 ${isMenuOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
-        <div className="overflow-hidden min-h-0">
-          <div className="flex flex-col py-4 border-t border-[var(--color-border)]">
-          {navItems.map((item) => (
+      {/* Mobile navigation */}
+      <div
+        id="mobile-menu"
+        className={`md:hidden grid transition-all duration-300 ${isMenuOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
+      >
+        <div className="min-h-0 overflow-hidden">
+          <nav aria-label="Main" className="flex flex-col border-t border-line py-2">
+            {[{ href: '/', key: 'nav.home' }, ...NAV_ITEMS].map((item) => {
+              const active = item.href === '/' ? pathname === '/' : isActive(pathname, item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  tabIndex={isMenuOpen ? undefined : -1}
+                  onClick={() => setIsMenuOpen(false)}
+                  aria-current={active ? 'page' : undefined}
+                  className={`px-4 py-3 text-[15px] font-medium transition-colors ${
+                    active ? 'bg-signal/10 text-signal-text' : 'text-subtle hover:bg-white/5 hover:text-fg'
+                  }`}
+                >
+                  {t(item.key)}
+                </Link>
+              );
+            })}
             <Link
-              key={item.href}
-              href={item.href}
+              href="/#download"
+              tabIndex={isMenuOpen ? undefined : -1}
               onClick={() => setIsMenuOpen(false)}
-              className={`py-3 px-4 text-sm font-medium no-underline transition-colors duration-200 ${
-                pathname === item.href
-                  ? 'text-[var(--color-accent-green)] bg-[rgba(74,222,128,0.1)]'
-                  : 'text-[var(--color-muted)] hover:text-[var(--color-accent-green)] hover:bg-[rgba(255,255,255,0.05)]'
-              }`}
+              className="mx-4 my-2 rounded-lg bg-signal px-4 py-2.5 text-center text-[15px] font-bold text-ink"
             >
-              {t(item.key)}
+              {t('nav.getApp')}
             </Link>
-          ))}
-          </div>
+          </nav>
         </div>
       </div>
-    </nav>
+    </header>
   );
 }

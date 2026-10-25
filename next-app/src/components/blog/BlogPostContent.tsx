@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm';
 import { useLanguage } from '@/hooks/useLanguage';
 import AdBanner from '@/components/ads/AdBanner';
 import type { BlogPost } from '@/lib/mdx';
+import { formatPostDate } from '@/lib/format';
 
 interface BlogPostContentProps {
   post: BlogPost;
@@ -16,10 +17,10 @@ const components = {
     <h1 className="text-3xl font-bold mt-8 mb-4 gradient-text" {...props}>{children}</h1>
   ),
   h2: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h2 className="text-2xl font-bold mt-8 mb-4 text-white" {...props}>{children}</h2>
+    <h2 className="text-2xl font-bold mt-8 mb-4 text-[var(--color-foreground)]" {...props}>{children}</h2>
   ),
   h3: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h3 className="text-xl font-bold mt-6 mb-3 text-white" {...props}>{children}</h3>
+    <h3 className="text-xl font-bold mt-6 mb-3 text-[var(--color-foreground)]" {...props}>{children}</h3>
   ),
   p: ({ children, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
     <p className="text-[var(--color-muted)] leading-relaxed mb-4" {...props}>{children}</p>
@@ -34,7 +35,7 @@ const components = {
     <li className="ml-4" {...props}>{children}</li>
   ),
   strong: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
-    <strong className="text-white font-semibold" {...props}>{children}</strong>
+    <strong className="text-[var(--color-foreground)] font-semibold" {...props}>{children}</strong>
   ),
   blockquote: ({ children, ...props }: React.HTMLAttributes<HTMLQuoteElement>) => (
     <blockquote className="border-l-4 border-[var(--color-accent-green)] pl-4 my-4 italic text-[var(--color-muted)]" {...props}>
@@ -70,7 +71,7 @@ const components = {
 };
 
 export default function BlogPostContent({ post }: BlogPostContentProps) {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
 
   return (
     <article className="max-w-[800px] mx-auto">
@@ -79,7 +80,7 @@ export default function BlogPostContent({ post }: BlogPostContentProps) {
         href="/blog"
         className="inline-flex items-center gap-2 text-[var(--color-accent-green)] no-underline mb-6 text-sm hover:underline"
       >
-        &larr; {lang === 'ko' ? '블로그로 돌아가기' : 'Back to Blog'}
+        &larr; {t('blog.backToBlog')}
       </Link>
 
       {/* Featured Image */}
@@ -99,9 +100,9 @@ export default function BlogPostContent({ post }: BlogPostContentProps) {
           <span className="bg-[rgba(74,222,128,0.2)] text-[var(--color-accent-green)] px-2.5 py-1 rounded text-xs font-medium">
             {lang === 'ko' ? post.category_ko : post.category_en}
           </span>
-          <span className="text-[var(--color-muted-dark)] text-xs">{post.publishedAt}</span>
+          <span className="text-[var(--color-muted-dark)] text-xs">{formatPostDate(post.publishedAt, lang)}</span>
         </div>
-        <h1 className="text-4xl font-bold mb-4 gradient-text">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-4 gradient-text">
           {lang === 'ko' ? post.title_ko : post.title_en}
         </h1>
         <p className="text-lg text-[var(--color-muted)]">
@@ -126,7 +127,7 @@ export default function BlogPostContent({ post }: BlogPostContentProps) {
           href="/blog"
           className="inline-flex items-center gap-2 text-[var(--color-accent-green)] no-underline text-sm hover:underline"
         >
-          &larr; {lang === 'ko' ? '블로그로 돌아가기' : 'Back to Blog'}
+          &larr; {t('blog.backToBlog')}
         </Link>
       </div>
     </article>

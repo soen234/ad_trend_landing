@@ -3,270 +3,156 @@
 import Image from 'next/image';
 import { useLanguage } from '@/hooks/useLanguage';
 import AdBanner from '@/components/ads/AdBanner';
+import StoreButtons from '@/components/StoreButtons';
+import { BarsIcon, BulbIcon, ClockIcon, CompassIcon, UsersIcon } from '@/components/icons';
 
 // =============================================================================
 // DESIGN SYSTEM
 // =============================================================================
 
 const ds = {
-  // Layout
-  container: 'flex flex-col gap-20',
-
-  // Section
+  container: 'mx-auto flex max-w-4xl flex-col gap-16',
   section: 'flex flex-col',
-  sectionHeader: 'flex items-center gap-4 mb-8',
-  sectionIcon: 'w-12 h-12 bg-gradient-to-br from-[var(--color-accent-green)] to-[var(--color-accent-cyan)] rounded-xl flex items-center justify-center text-2xl shrink-0',
-  sectionTitle: 'text-2xl font-bold',
-  sectionDesc: 'text-[var(--color-muted)] leading-relaxed text-[16px] mb-8',
+  sectionHeader: 'mb-4 flex items-center gap-3',
+  sectionTitle: 'text-2xl font-bold tracking-tight text-fg',
+  sectionDesc: 'mb-6 text-[16px] leading-relaxed text-subtle',
 
-  // Feature Grid
-  featureGrid: 'grid grid-cols-2 md:grid-cols-4 gap-5',
-  featureCard: 'bg-[var(--color-card)] border border-[var(--color-border)] rounded-2xl p-6 text-center hover:border-[var(--color-accent-green)] transition-colors',
-  featureEmoji: 'text-[44px] mb-4',
-  featureTitle: 'text-[16px] font-semibold mb-2',
-  featureDesc: 'text-[14px] text-[var(--color-muted)] leading-relaxed',
+  cardGrid: 'grid grid-cols-2 gap-3 p-0 sm:gap-4 lg:grid-cols-4',
+  card: 'list-none rounded-2xl border border-line bg-panel p-4 sm:p-5',
+  cardTitle: 'mt-3 text-[16px] font-semibold text-fg',
+  cardDesc: 'mt-1 text-[14px] leading-relaxed text-subtle',
 
-  // Step List
-  stepList: 'flex flex-col gap-4',
-  stepCard: 'bg-[var(--color-card)] border border-[var(--color-border)] rounded-2xl p-6 flex items-start gap-5 hover:border-[var(--color-accent-green)] transition-colors',
-  stepNumber: 'w-11 h-11 bg-gradient-to-br from-[var(--color-accent-green)] to-[var(--color-accent-cyan)] rounded-full flex items-center justify-center font-bold text-[16px] text-[var(--color-background)] shrink-0',
-  stepContent: 'flex-1 pt-1',
-  stepTitle: 'text-[17px] font-semibold mb-2',
-  stepDesc: 'text-[15px] text-[var(--color-muted)] leading-relaxed',
+  stepList: 'flex flex-col gap-3 p-0',
+  stepCard: 'flex list-none items-start gap-4 rounded-2xl border border-line bg-panel p-5',
+  stepNumber:
+    'flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-signal text-[15px] font-bold text-ink',
+  stepTitle: 'mb-1 text-[16px] font-semibold text-fg',
+  stepDesc: 'text-[15px] leading-relaxed text-subtle',
 
-  // Table
-  tableWrapper: 'overflow-x-auto rounded-2xl border border-[var(--color-border)]',
-  table: 'w-full border-collapse',
-  tableHeader: 'py-5 px-6 text-left bg-[var(--color-card)] text-[var(--color-accent-green)] font-semibold text-[15px] border-b border-[var(--color-border)]',
-  tableCell: 'py-5 px-6 text-[var(--color-muted)] text-[15px] border-b border-[var(--color-border)] last:border-b-0',
+  tableWrapper: 'overflow-x-auto rounded-2xl border border-line',
+  table: 'w-full min-w-[560px] border-collapse',
+  tableHeader: 'border-b border-line bg-panel px-5 py-4 text-left text-[14px] font-semibold text-signal-text',
+  tableCell: 'border-b border-line px-5 py-4 text-[15px] text-subtle',
 
-  // Info/Warning Box
-  infoBox: 'bg-[rgba(74,222,128,0.08)] border border-[rgba(74,222,128,0.25)] rounded-2xl p-7 mt-8',
-  infoBoxHeader: 'flex items-center gap-3 mb-4',
-  infoBoxIcon: 'text-xl',
-  infoBoxTitle: 'text-[var(--color-accent-green)] font-semibold text-[17px]',
-  infoBoxDesc: 'text-[15px] text-[var(--color-muted)] leading-relaxed',
-
-  warningBox: 'bg-[rgba(251,191,36,0.08)] border border-[rgba(251,191,36,0.25)] rounded-2xl p-7 mt-8',
-  warningBoxTitle: 'text-[#fbbf24] font-semibold text-[17px]',
+  callout: 'mt-6 rounded-2xl border p-5',
+  calloutTitle: 'mb-1 text-[15px] font-semibold',
+  calloutDesc: 'text-[15px] leading-relaxed text-subtle',
 } as const;
 
 // =============================================================================
-// TYPE DEFINITIONS
+// DATA (translation keys)
 // =============================================================================
 
-interface Feature {
-  emoji: string;
-  titleKey: string;
-  descKey: string;
-}
+type T = (key: string) => string;
 
-interface Step {
-  titleKey: string;
-  descKey: string;
-}
-
-interface TableRow {
-  cells: (string | { key: string })[];
-}
-
-interface TableData {
-  headers: (string | { key: string })[];
-  rows: TableRow[];
-}
-
-interface FAQ {
-  questionKey: string;
-  answerKey: string;
-}
-
-// =============================================================================
-// DATA
-// =============================================================================
-
-const features: Feature[] = [
-  { emoji: '📱', titleKey: 'guide.bannerAds', descKey: 'guide.bannerAdsShort' },
-  { emoji: '📺', titleKey: 'guide.interstitial', descKey: 'guide.interstitialShort' },
-  { emoji: '🎁', titleKey: 'guide.rewarded', descKey: 'guide.rewardedShort' },
-  { emoji: '📸', titleKey: 'guide.screenshot', descKey: 'guide.screenshotShort' },
+const highlights = [
+  { Icon: ClockIcon, tone: 'tone-news', title: 'guide.highlightBrief', desc: 'guide.highlightBriefShort' },
+  { Icon: UsersIcon, tone: 'tone-platform', title: 'guide.highlightRoles', desc: 'guide.highlightRolesShort' },
+  { Icon: BulbIcon, tone: 'tone-amber', title: 'guide.highlightSoWhat', desc: 'guide.highlightSoWhatShort' },
+  { Icon: BarsIcon, tone: 'tone-creative', title: 'guide.highlightPulse', desc: 'guide.highlightPulseShort' },
 ];
 
-const gettingStartedSteps: Step[] = [
-  { titleKey: 'guide.downloadAppTitle', descKey: 'guide.downloadAppDesc' },
-  { titleKey: 'guide.launchAppTitle', descKey: 'guide.launchAppDesc' },
-  { titleKey: 'guide.exploreTabsTitle', descKey: 'guide.exploreTabsDesc' },
+const gettingStartedSteps = [
+  { title: 'guide.downloadAppTitle', desc: 'guide.downloadAppDesc' },
+  { title: 'guide.chooseRoleTitle', desc: 'guide.chooseRoleDesc' },
+  { title: 'guide.setTimeTitle', desc: 'guide.setTimeDesc' },
 ];
 
-const bannerTable: TableData = {
-  headers: [
-    { key: 'guide.bannerType' },
-    { key: 'guide.size' },
-    { key: 'guide.features' },
-  ],
-  rows: [
-    { cells: ['Banner', '320x50', { key: 'guide.standardBanner' }] },
-    { cells: ['Large Banner', '320x100', { key: 'guide.greaterVisibility' }] },
-    { cells: ['Medium Rectangle', '300x250', { key: 'guide.idealBetweenContent' }] },
-    { cells: ['Adaptive', { key: 'guide.auto' }, { key: 'guide.fitsScreenWidth' }] },
-  ],
-};
-
-const interstitialSteps: Step[] = [
-  { titleKey: 'guide.selectInterstitialTabTitle', descKey: 'guide.selectInterstitialTabDesc' },
-  { titleKey: 'guide.waitForAdLoadingTitle', descKey: 'guide.waitForAdLoadingDesc' },
-  { titleKey: 'guide.viewTheAdTitle', descKey: 'guide.viewTheAdDesc' },
+const todaySteps = [
+  { title: 'guide.readSummaryTitle', desc: 'guide.readSummaryDesc' },
+  { title: 'guide.checkSoWhatTitle', desc: 'guide.checkSoWhatDesc' },
+  { title: 'guide.finishTitle', desc: 'guide.finishDesc' },
 ];
 
-const rewardedSteps: Step[] = [
-  { titleKey: 'guide.selectRewardedTabTitle', descKey: 'guide.selectRewardedTabDesc' },
-  { titleKey: 'guide.watchTheAdTitle', descKey: 'guide.watchTheAdDesc' },
-  { titleKey: 'guide.checkRewardsTitle', descKey: 'guide.checkRewardsDesc' },
+const roleRows = [
+  ['guide.rolePerformance', 'guide.rolePerformanceWho', 'guide.rolePerformanceFocus'],
+  ['guide.roleUa', 'guide.roleUaWho', 'guide.roleUaFocus'],
+  ['guide.roleBrand', 'guide.roleBrandWho', 'guide.roleBrandFocus'],
 ];
 
-const screenshotSteps: Step[] = [
-  { titleKey: 'guide.findSaveButtonTitle', descKey: 'guide.findSaveButtonDesc' },
-  { titleKey: 'guide.grantPermissionTitle', descKey: 'guide.grantPermissionDesc' },
-  { titleKey: 'guide.saveCompleteTitle', descKey: 'guide.saveCompleteDesc' },
+const exploreTabs = [
+  { Icon: CompassIcon, tone: 'tone-news', title: 'guide.exploreNews', desc: 'guide.exploreNewsShort' },
+  { Icon: CompassIcon, tone: 'tone-platform', title: 'guide.explorePlatforms', desc: 'guide.explorePlatformsShort' },
+  { Icon: CompassIcon, tone: 'tone-expert', title: 'guide.exploreExperts', desc: 'guide.exploreExpertsShort' },
+  { Icon: BarsIcon, tone: 'tone-creative', title: 'guide.explorePulse', desc: 'guide.explorePulseShort' },
 ];
 
-const comparisonTable: TableData = {
-  headers: [
-    { key: 'guide.format' },
-    { key: 'guide.userExperience' },
-    'eCPM',
-    { key: 'guide.recommendedFor' },
-  ],
-  rows: [
-    { cells: ['Banner', { key: 'guide.lowDisruption' }, { key: 'guide.low' }, { key: 'guide.continuousExposure' }] },
-    { cells: ['Interstitial', { key: 'guide.mediumDisruption' }, { key: 'guide.medium' }, { key: 'guide.screenTransitions' }] },
-    { cells: ['Rewarded', { key: 'guide.userChoice' }, { key: 'guide.high' }, { key: 'guide.whenOfferingRewards' }] },
-  ],
-};
-
-const faqs: FAQ[] = [
-  { questionKey: 'guide.adsWontLoadQ', answerKey: 'guide.adsWontLoadA' },
-  { questionKey: 'guide.noRewardQ', answerKey: 'guide.noRewardA' },
-  { questionKey: 'guide.cantSaveScreenshotQ', answerKey: 'guide.cantSaveScreenshotA' },
+const faqs = [
+  { q: 'guide.whenPublishedQ', a: 'guide.whenPublishedA' },
+  { q: 'guide.noReminderQ', a: 'guide.noReminderA' },
+  { q: 'guide.sourcesQ', a: 'guide.sourcesA' },
+  { q: 'guide.changeRoleQ', a: 'guide.changeRoleA' },
+  { q: 'guide.freeQ', a: 'guide.freeA' },
 ];
 
 // =============================================================================
 // COMPONENTS
 // =============================================================================
 
-function SectionHeader({ emoji, title }: { emoji: string; title: string }) {
+function Section({ id, title, desc, children }: { id: string; title: string; desc?: string; children: React.ReactNode }) {
   return (
-    <div className={ds.sectionHeader}>
-      <span className={ds.sectionIcon}>{emoji}</span>
-      <h2 className={ds.sectionTitle}>{title}</h2>
-    </div>
+    <section className={ds.section} aria-labelledby={id}>
+      <div className={ds.sectionHeader}>
+        <span aria-hidden="true" className="h-6 w-1.5 rounded-full bg-signal" />
+        <h2 id={id} className={ds.sectionTitle}>
+          {title}
+        </h2>
+      </div>
+      {desc && <p className={ds.sectionDesc}>{desc}</p>}
+      {children}
+    </section>
   );
 }
 
-function FeatureGrid({ items, t }: { items: Feature[]; t: (key: string) => string }) {
+function CardGrid({ items, t }: { items: typeof highlights; t: T }) {
   return (
-    <div className={ds.featureGrid}>
-      {items.map((item, i) => (
-        <div key={i} className={ds.featureCard}>
-          <div className={ds.featureEmoji}>{item.emoji}</div>
-          <h4 className={ds.featureTitle}>{t(item.titleKey)}</h4>
-          <p className={ds.featureDesc}>{t(item.descKey)}</p>
-        </div>
+    <ul className={ds.cardGrid}>
+      {items.map(({ Icon, tone, title, desc }) => (
+        <li key={title} className={ds.card}>
+          <span className={`tone-icon ${tone}`}>
+            <Icon className="h-5 w-5" />
+          </span>
+          <h3 className={ds.cardTitle}>{t(title)}</h3>
+          <p className={ds.cardDesc}>{t(desc)}</p>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }
 
-function StepList({ steps, t }: { steps: Step[]; t: (key: string) => string }) {
+function StepList({ steps, t, marker }: { steps: { title: string; desc: string }[]; t: T; marker?: string }) {
   return (
-    <div className={ds.stepList}>
+    <ol className={ds.stepList}>
       {steps.map((step, i) => (
-        <div key={i} className={ds.stepCard}>
-          <span className={ds.stepNumber}>{i + 1}</span>
-          <div className={ds.stepContent}>
-            <h4 className={ds.stepTitle}>{t(step.titleKey)}</h4>
-            <p className={ds.stepDesc}>{t(step.descKey)}</p>
+        <li key={step.title} className={ds.stepCard}>
+          <span className={ds.stepNumber} aria-hidden="true">
+            {marker ?? i + 1}
+          </span>
+          <div className="flex-1 pt-1">
+            <h3 className={ds.stepTitle}>{t(step.title)}</h3>
+            <p className={ds.stepDesc}>{t(step.desc)}</p>
           </div>
-        </div>
+        </li>
       ))}
-    </div>
+    </ol>
   );
 }
 
-function DataTable({ data, t }: { data: TableData; t: (key: string) => string }) {
-  const renderCell = (cell: string | { key: string }) => {
-    return typeof cell === 'string' ? cell : t(cell.key);
-  };
-
+function Callout({ tone, title, desc }: { tone: 'green' | 'amber'; title: string; desc: string }) {
+  const styles =
+    tone === 'green'
+      ? { box: 'border-signal/30 bg-signal/[0.08]', title: 'text-signal-text' }
+      : { box: 'border-amber/30 bg-amber/[0.08]', title: 'text-amber-text' };
   return (
-    <div className={ds.tableWrapper}>
-      <table className={ds.table}>
-        <thead>
-          <tr>
-            {data.headers.map((header, i) => (
-              <th key={i} className={ds.tableHeader}>
-                {renderCell(header)}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.rows.map((row, i) => (
-            <tr key={i}>
-              {row.cells.map((cell, j) => (
-                <td key={j} className={ds.tableCell}>
-                  {renderCell(cell)}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function InfoBox({ icon, titleKey, descKey, t }: { icon: string; titleKey: string; descKey: string; t: (key: string) => string }) {
-  return (
-    <div className={ds.infoBox}>
-      <div className={ds.infoBoxHeader}>
-        <span className={ds.infoBoxIcon}>{icon}</span>
-        <h4 className={ds.infoBoxTitle}>{t(titleKey)}</h4>
-      </div>
-      <p className={ds.infoBoxDesc}>{t(descKey)}</p>
-    </div>
-  );
-}
-
-function WarningBox({ icon, titleKey, descKey, t }: { icon: string; titleKey: string; descKey: string; t: (key: string) => string }) {
-  return (
-    <div className={ds.warningBox}>
-      <div className={ds.infoBoxHeader}>
-        <span className={ds.infoBoxIcon}>{icon}</span>
-        <h4 className={ds.warningBoxTitle}>{t(titleKey)}</h4>
-      </div>
-      <p className={ds.infoBoxDesc}>{t(descKey)}</p>
-    </div>
-  );
-}
-
-function FAQList({ items, t }: { items: FAQ[]; t: (key: string) => string }) {
-  return (
-    <div className={ds.stepList}>
-      {items.map((item, i) => (
-        <div key={i} className={ds.stepCard}>
-          <span className={ds.stepNumber}>Q</span>
-          <div className={ds.stepContent}>
-            <h4 className={ds.stepTitle}>{t(item.questionKey)}</h4>
-            <p className={ds.stepDesc}>{t(item.answerKey)}</p>
-          </div>
-        </div>
-      ))}
+    <div className={`${ds.callout} ${styles.box}`}>
+      <p className={`${ds.calloutTitle} ${styles.title}`}>{title}</p>
+      <p className={ds.calloutDesc}>{desc}</p>
     </div>
   );
 }
 
 // =============================================================================
-// MAIN COMPONENT
+// PAGE
 // =============================================================================
 
 export default function GuidePage() {
@@ -274,84 +160,83 @@ export default function GuidePage() {
 
   return (
     <div className={ds.container}>
-      {/* Header */}
-      <header className="flex items-center gap-6 pb-10 border-b border-[var(--color-border)]">
-        <Image
-          src="/logo.png"
-          alt="TAT Logo"
-          width={80}
-          height={80}
-          className="rounded-2xl"
-        />
+      <header className="flex flex-col gap-5 border-b border-line pb-10 sm:flex-row sm:items-center sm:gap-6">
+        <Image src="/icon.svg" alt="" width={72} height={72} className="rounded-[18px]" unoptimized priority />
         <div>
-          <h1 className="text-4xl font-bold gradient-text mb-2">{t('guide.title')}</h1>
-          <p className="text-[var(--color-muted)] text-[16px]">{t('guide.subtitle')}</p>
+          <h1 className="text-3xl font-bold tracking-tight text-fg sm:text-4xl">{t('guide.title')}</h1>
+          <p className="mt-2 text-[16px] text-subtle">{t('guide.subtitle')}</p>
         </div>
       </header>
 
+      <Section id="intro" title={t('guide.introTitle')} desc={t('guide.introDesc')}>
+        <CardGrid items={highlights} t={t} />
+      </Section>
+
+      <Section id="getting-started" title={t('guide.gettingStarted')} desc={t('guide.gettingStartedDesc')}>
+        <StepList steps={gettingStartedSteps} t={t} />
+        <StoreButtons className="mt-6" />
+      </Section>
+
       <AdBanner slot="1234567890" />
 
-      {/* Introduction */}
-      <section className={ds.section}>
-        <SectionHeader emoji="📖" title={t('guide.introTitle')} />
-        <p className={ds.sectionDesc}>{t('guide.introDesc')}</p>
-        <FeatureGrid items={features} t={t} />
-      </section>
+      <Section id="today" title={t('guide.todayTitle')} desc={t('guide.todayDesc')}>
+        <StepList steps={todaySteps} t={t} />
+      </Section>
 
-      {/* Getting Started */}
-      <section className={ds.section}>
-        <SectionHeader emoji="🚀" title={t('guide.gettingStarted')} />
-        <p className={ds.sectionDesc}>{t('guide.gettingStartedDesc')}</p>
-        <StepList steps={gettingStartedSteps} t={t} />
-      </section>
+      <Section id="roles" title={t('guide.rolesTitle')} desc={t('guide.rolesDesc')}>
+        <div className={ds.tableWrapper}>
+          <table className={ds.table}>
+            <thead>
+              <tr>
+                <th scope="col" className={ds.tableHeader}>{t('guide.edition')}</th>
+                <th scope="col" className={ds.tableHeader}>{t('guide.whoFor')}</th>
+                <th scope="col" className={ds.tableHeader}>{t('guide.soWhatFocus')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {roleRows.map(([name, who, focus]) => (
+                <tr key={name} className="last:[&>*]:border-b-0">
+                  <th scope="row" className={`${ds.tableCell} text-left font-semibold text-fg`}>{t(name)}</th>
+                  <td className={ds.tableCell}>{t(who)}</td>
+                  <td className={ds.tableCell}>{t(focus)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      <Section id="explore" title={t('guide.exploreTitle')} desc={t('guide.exploreDesc')}>
+        <CardGrid items={exploreTabs} t={t} />
+      </Section>
 
       <AdBanner slot="0987654321" />
 
-      {/* Banner Ads */}
-      <section className={ds.section}>
-        <SectionHeader emoji="📱" title={t('guide.usingBannerAds')} />
-        <p className={ds.sectionDesc}>{t('guide.bannerAdsDesc')}</p>
-        <DataTable data={bannerTable} t={t} />
-        <InfoBox icon="💡" titleKey="guide.tip" descKey="guide.bannerTip" t={t} />
-      </section>
+      <Section id="saved" title={t('guide.savedTitle')} desc={t('guide.savedDesc')}>
+        <Callout tone="green" title={t('guide.tip')} desc={t('guide.savedTip')} />
+      </Section>
 
-      {/* Interstitial Ads */}
-      <section className={ds.section}>
-        <SectionHeader emoji="📺" title={t('guide.usingInterstitialAds')} />
-        <p className={ds.sectionDesc}>{t('guide.interstitialAdsDesc')}</p>
-        <StepList steps={interstitialSteps} t={t} />
-        <WarningBox icon="⚠️" titleKey="guide.note" descKey="guide.interstitialNote" t={t} />
-      </section>
+      <Section id="pulse" title={t('guide.pulseTitle')} desc={t('guide.pulseDesc')}>
+        <Callout tone="amber" title={t('guide.note')} desc={t('guide.pulseNote')} />
+      </Section>
 
-      {/* Rewarded Ads */}
-      <section className={ds.section}>
-        <SectionHeader emoji="🎁" title={t('guide.usingRewardedAds')} />
-        <p className={ds.sectionDesc}>{t('guide.rewardedAdsDesc')}</p>
-        <StepList steps={rewardedSteps} t={t} />
-        <InfoBox icon="💡" titleKey="guide.rewardedBenefits" descKey="guide.rewardedBenefitsDesc" t={t} />
-      </section>
-
-      {/* Screenshot Feature */}
-      <section className={ds.section}>
-        <SectionHeader emoji="📸" title={t('guide.screenshotFeature')} />
-        <p className={ds.sectionDesc}>{t('guide.screenshotFeatureDesc')}</p>
-        <StepList steps={screenshotSteps} t={t} />
-      </section>
-
-      <AdBanner slot="5566778899" />
-
-      {/* Ad Format Comparison */}
-      <section className={ds.section}>
-        <SectionHeader emoji="📊" title={t('guide.adFormatComparison')} />
-        <p className={ds.sectionDesc}>{t('guide.adFormatComparisonDesc')}</p>
-        <DataTable data={comparisonTable} t={t} />
-      </section>
-
-      {/* FAQ */}
-      <section className={ds.section}>
-        <SectionHeader emoji="❓" title={t('guide.faq')} />
-        <FAQList items={faqs} t={t} />
-      </section>
+      <Section id="faq" title={t('guide.faq')}>
+        <ul className="flex flex-col gap-3 p-0">
+          {faqs.map((faq) => (
+            <li key={faq.q} className="list-none">
+              <details className="group rounded-2xl border border-line bg-panel p-5 open:bg-panel-hover">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-semibold text-fg [&::-webkit-details-marker]:hidden">
+                  {t(faq.q)}
+                  <span aria-hidden="true" className="text-xl leading-none text-subtle transition-transform group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <p className="mt-3 text-[15px] leading-relaxed text-subtle">{t(faq.a)}</p>
+              </details>
+            </li>
+          ))}
+        </ul>
+      </Section>
 
       <AdBanner slot="1122334455" />
     </div>

@@ -1,5 +1,11 @@
 # Design Guide Skill
 
+> **Update (2026-10):** the site now uses the Today Ad Trend brand palette (ink, signal green, sky,
+> amber, violet, rose). Tokens and Tailwind utilities (`bg-panel`, `text-subtle`, `border-line`,
+> `text-signal-text`, `tone-*` classes) live in `next-app/src/app/globals.css`. The news page,
+> `NewsPreview.tsx` and `cardStyles.ts` referenced below were removed; the brief cards are in
+> `next-app/src/components/brief/`.
+
 ## Overview
 This skill ensures all UI components follow the project's design system for consistent spacing and styling.
 

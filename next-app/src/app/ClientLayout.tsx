@@ -9,7 +9,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   return (
     <LanguageProvider>
       <Header />
-      <main className="pt-[100px] px-6 md:px-8 pb-10">
+      <main className="mx-auto w-full max-w-[1120px] px-4 pt-[84px] pb-10 sm:px-6">
         {children}
         <Footer />
       </main>

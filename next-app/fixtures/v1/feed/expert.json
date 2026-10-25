@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-25T21:04:00Z",
+  "items": [
+    {
+      "id": "09ea77166c6c",
+      "section": "expert",
+      "title": "Fixture: Why your attribution model is quietly overpaying for retargeting",
+      "url": "https://example.com/fixture/ef900fbe085a",
+      "source": "SparkToro",
+      "publishedAt": "2026-10-25T11:45:00Z",
+      "summary": "An argument that view-through and short-window retargeting take credit for conversions that would have happened anyway, with a simple holdout test to check.",
+      "platforms": [
+        "other"
+      ],
+      "tags": [
+        "attribution",
+        "retargeting"
+      ],
+      "importance": 3,
+      "roles": {
+        "performance": {
+          "relevance": 3,
+          "soWhat": "Run a 10% retargeting holdout for two weeks; cut spend if the gap is small."
+        },
+        "ua": {
+          "relevance": 2,
+          "soWhat": "Re-engagement campaigns have the same problem; holdouts apply to apps too."
+        },
+        "brand": {
+          "relevance": 1,
+          "soWhat": "A reminder to judge brand work on reach and recall, not last-touch credit."
+        }
+      },
+      "enriched": true
+    },
+    {
+      "id": "9870abacaee3",
+      "section": "expert",
+      "title": "Fixture: The case for fewer, bigger creative bets",
+      "url": "https://example.com/fixture/a8ffa6487846",
+      "source": "Seth Godin",
+      "publishedAt": "2026-10-24T22:00:00Z",
+      "summary": "A short essay arguing that teams spreading budget across dozens of small creative tests learn less than teams that commit to a few distinct ideas.",
+      "platforms": [
+        "other"
+      ],
+      "tags": [
+        "creative",
+        "strategy"
+      ],
+      "importance": 2,
+      "roles": {
+        "performance": {
+          "relevance": 1,
+          "soWhat": "Group creative tests by concept, not by small variations, so results are readable."
+        },
+        "ua": {
+          "relevance": 1,
+          "soWhat": "Fewer concepts with more variations each may beat many one-off ads in app stores."
+        },
+        "brand": {
+          "relevance": 3,
+          "soWhat": "Pick two distinct concepts for next quarter and fund them properly instead of ten small tests."
+        }
+      },
+      "enriched": true
+    },
+    {
+      "id": "fixtureunsafe1",
+      "section": "expert",
+      "title": "Fixture: item with an unsafe link (must render as plain text)",
+      "url": "javascript:alert(document.domain)",
+      "source": "Fixture Feed",
+      "publishedAt": "2026-10-23T08:00:00Z",
+      "summary": "Used to check that javascript: and data: URLs from the feed never reach an href or src.",
+      "platforms": [
+        "other"
+      ],
+      "tags": [
+        "security"
+      ],
+      "importance": 1,
+      "roles": {
+        "performance": {
+          "relevance": 0,
+          "soWhat": ""
+        },
+        "ua": {
+          "relevance": 0,
+          "soWhat": ""
+        },
+        "brand": {
+          "relevance": 0,
+          "soWhat": ""
+        }
+      },
+      "imageUrl": "data:image/svg+xml;base64,PHN2Zy8+",
+      "enriched": false
+    }
+  ]
+}
