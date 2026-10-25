@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useLanguage } from '@/hooks/useLanguage';
 import AdBanner from '@/components/ads/AdBanner';
 import type { BlogPost } from '@/lib/mdx';
+import { formatPostDate } from '@/lib/format';
 
 interface BlogListProps {
   posts: BlogPost[];
@@ -20,14 +21,8 @@ export default function BlogList({ posts }: BlogListProps) {
     <div>
       {/* Page Header */}
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-3 gradient-text">
-          {lang === 'ko' ? '광고 트렌드 블로그' : 'Ad Trend Blog'}
-        </h1>
-        <p className="text-[var(--color-muted)] text-base">
-          {lang === 'ko'
-            ? '모바일 광고의 최신 트렌드와 인사이트를 공유합니다'
-            : 'Sharing the latest trends and insights in mobile advertising'}
-        </p>
+        <h1 className="text-3xl sm:text-4xl font-bold mb-3 gradient-text">{t('blog.pageTitle')}</h1>
+        <p className="text-[var(--color-muted)] text-base">{t('blog.pageSubtitle')}</p>
       </div>
 
       <AdBanner slot="1234567890" />
@@ -53,14 +48,14 @@ export default function BlogList({ posts }: BlogListProps) {
                 {lang === 'ko' ? featuredPost.category_ko : featuredPost.category_en}
               </span>
               <span className="text-[var(--color-muted-dark)] text-xs">
-                {featuredPost.publishedAt}
+                {formatPostDate(featuredPost.publishedAt, lang)}
               </span>
             </div>
             {/* Title - Design Guide: text-2xl for featured, mb-4 */}
-            <h2 className="text-2xl font-bold mb-4">
+            <h2 className="text-xl sm:text-2xl font-bold mb-4">
               <Link
                 href={`/blog/${featuredPost.slug}`}
-                className="text-white no-underline hover:text-[var(--color-accent-green)] transition-colors"
+                className="text-[var(--color-foreground)] no-underline hover:text-[var(--color-accent-green)] transition-colors"
               >
                 {lang === 'ko' ? featuredPost.title_ko : featuredPost.title_en}
               </Link>
@@ -98,13 +93,13 @@ export default function BlogList({ posts }: BlogListProps) {
                   <span className="bg-[rgba(74,222,128,0.2)] text-[var(--color-accent-green)] px-2.5 py-1 rounded text-xs font-medium">
                     {lang === 'ko' ? post.category_ko : post.category_en}
                   </span>
-                  <span className="text-[var(--color-muted-dark)] text-xs">{post.publishedAt}</span>
+                  <span className="text-[var(--color-muted-dark)] text-xs">{formatPostDate(post.publishedAt, lang)}</span>
                 </div>
                 {/* Title - Design Guide: text-xl, mb-4 */}
                 <h2 className="text-xl font-bold mb-4">
                   <Link
                     href={`/blog/${post.slug}`}
-                    className="text-white no-underline hover:text-[var(--color-accent-green)] transition-colors"
+                    className="text-[var(--color-foreground)] no-underline hover:text-[var(--color-accent-green)] transition-colors"
                   >
                     {lang === 'ko' ? post.title_ko : post.title_en}
                   </Link>

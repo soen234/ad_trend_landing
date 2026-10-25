@@ -1,5 +1,11 @@
-import { getAllBlogsFromDB, getBlogBySlugFromDB, type BlogPost as DBBlogPost } from './supabase';
+import fs from 'fs';
+import path from 'path';
 
+/**
+ * Blog posts live as Markdown files in `src/content/blog/<slug>.md`.
+ * Each file starts with a frontmatter block of `key: value` lines, where values are
+ * JSON literals (double-quoted strings, booleans). Posts are read at build time only.
+ */
 export interface BlogPost {
   slug: string;
   title_ko: string;
@@ -10,74 +16,76 @@ export interface BlogPost {
   category_en: string;
   emoji: string;
   image?: string;
+  /** ISO date, YYYY-MM-DD */
   publishedAt: string;
   featured?: boolean;
   content: string;
 }
 
-// Convert DB blog to unified BlogPost type
-function dbBlogToBlogPost(dbBlog: DBBlogPost): BlogPost {
-  // Format published_at to readable date
-  const date = new Date(dbBlog.published_at);
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const publishedAt = `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+const POSTS_DIR = path.join(process.cwd(), 'src/content/blog');
+const SLUG_RE = /^[a-z0-9][a-z0-9-]*$/;
 
+function parseFrontmatter(raw: string): { data: Record<string, unknown>; content: string } {
+  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+  if (!match) return { data: {}, content: raw };
+
+  const data: Record<string, unknown> = {};
+  for (const line of match[1].split(/\r?\n/)) {
+    const idx = line.indexOf(':');
+    if (idx <= 0) continue;
+    const key = line.slice(0, idx).trim();
+    const value = line.slice(idx + 1).trim();
+    try {
+      data[key] = JSON.parse(value);
+    } catch {
+      data[key] = value;
+    }
+  }
+  return { data, content: match[2].trim() };
+}
+
+function str(value: unknown): string {
+  return typeof value === 'string' ? value : '';
+}
+
+function readPost(slug: string): BlogPost | null {
+  if (!SLUG_RE.test(slug)) return null;
+  const file = path.join(POSTS_DIR, `${slug}.md`);
+  if (!fs.existsSync(file)) return null;
+
+  const { data, content } = parseFrontmatter(fs.readFileSync(file, 'utf8'));
   return {
-    slug: dbBlog.slug,
-    title_ko: dbBlog.title_ko,
-    title_en: dbBlog.title_en,
-    description_ko: dbBlog.description_ko,
-    description_en: dbBlog.description_en,
-    category_ko: dbBlog.category_ko,
-    category_en: dbBlog.category_en,
-    emoji: dbBlog.emoji,
-    image: dbBlog.image_url || undefined,
-    publishedAt,
-    featured: dbBlog.featured,
-    content: dbBlog.content,
+    slug,
+    title_ko: str(data.title_ko) || str(data.title_en),
+    title_en: str(data.title_en),
+    description_ko: str(data.description_ko) || str(data.description_en),
+    description_en: str(data.description_en),
+    category_ko: str(data.category_ko) || str(data.category_en),
+    category_en: str(data.category_en),
+    emoji: str(data.emoji),
+    image: str(data.image) || undefined,
+    publishedAt: str(data.publishedAt),
+    featured: data.featured === true,
+    content,
   };
 }
 
-// Get all posts from DB
-export async function getAllPosts(): Promise<BlogPost[]> {
-  try {
-    const dbBlogs = await getAllBlogsFromDB();
-    return dbBlogs.map(dbBlogToBlogPost);
-  } catch (error) {
-    console.error('Error fetching blogs:', error);
-    return [];
-  }
+export function getAllPostSlugs(): string[] {
+  if (!fs.existsSync(POSTS_DIR)) return [];
+  return fs
+    .readdirSync(POSTS_DIR)
+    .filter((name) => name.endsWith('.md'))
+    .map((name) => name.replace(/\.md$/, ''))
+    .filter((slug) => SLUG_RE.test(slug));
 }
 
-// Alias for backward compatibility
-export const getAllPostsWithDB = getAllPosts;
-
-// Get post by slug from DB
-export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  try {
-    const dbBlog = await getBlogBySlugFromDB(slug);
-    if (dbBlog) {
-      return dbBlogToBlogPost(dbBlog);
-    }
-  } catch (error) {
-    console.error('Error fetching blog:', error);
-  }
-  return null;
+export function getAllPosts(): BlogPost[] {
+  return getAllPostSlugs()
+    .map(readPost)
+    .filter((post): post is BlogPost => post !== null)
+    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
 }
 
-// Alias for backward compatibility
-export const getPostBySlugWithDB = getPostBySlug;
-
-// Get all post slugs from DB
-export async function getAllPostSlugs(): Promise<string[]> {
-  try {
-    const dbBlogs = await getAllBlogsFromDB();
-    return dbBlogs.map((b) => b.slug);
-  } catch (error) {
-    console.error('Error fetching blog slugs:', error);
-    return [];
-  }
+export function getPostBySlug(slug: string): BlogPost | null {
+  return readPost(slug);
 }
-
-// Alias for backward compatibility
-export const getAllPostSlugsWithDB = getAllPostSlugs;

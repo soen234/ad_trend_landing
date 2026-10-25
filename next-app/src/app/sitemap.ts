@@ -1,50 +1,27 @@
-import { MetadataRoute } from 'next';
-import { getAllBlogsFromDB } from '@/lib/supabase';
+import type { MetadataRoute } from 'next';
+import { getAllPosts } from '@/lib/mdx';
+import { SITE_URL } from '@/lib/site';
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://todayadtrend.com';
+export default function sitemap(): MetadataRoute.Sitemap {
+  const now = new Date();
 
-  // Static pages
   const staticPages: MetadataRoute.Sitemap = [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/news`,
-      lastModified: new Date(),
-      changeFrequency: 'hourly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/blog`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/guide`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    },
+    { url: SITE_URL, lastModified: now, changeFrequency: 'daily', priority: 1 },
+    { url: `${SITE_URL}/brief`, lastModified: now, changeFrequency: 'daily', priority: 0.9 },
+    { url: `${SITE_URL}/brief?role=ua`, lastModified: now, changeFrequency: 'daily', priority: 0.8 },
+    { url: `${SITE_URL}/brief?role=brand`, lastModified: now, changeFrequency: 'daily', priority: 0.8 },
+    { url: `${SITE_URL}/pulse`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${SITE_URL}/blog`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${SITE_URL}/guide`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${SITE_URL}/privacy`, lastModified: new Date('2026-10-25'), changeFrequency: 'yearly', priority: 0.3 },
   ];
 
-  // Dynamic blog pages
-  let blogPages: MetadataRoute.Sitemap = [];
-  try {
-    const blogs = await getAllBlogsFromDB();
-    blogPages = blogs.map((blog) => ({
-      url: `${baseUrl}/blog/${blog.slug}`,
-      lastModified: new Date(blog.published_at),
-      changeFrequency: 'monthly' as const,
-      priority: 0.8,
-    }));
-  } catch (error) {
-    console.error('Error fetching blogs for sitemap:', error);
-  }
+  const blogPages: MetadataRoute.Sitemap = getAllPosts().map((post) => ({
+    url: `${SITE_URL}/blog/${post.slug}`,
+    lastModified: new Date(`${post.publishedAt}T00:00:00Z`),
+    changeFrequency: 'yearly',
+    priority: 0.5,
+  }));
 
   return [...staticPages, ...blogPages];
 }
